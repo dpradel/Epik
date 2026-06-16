@@ -157,8 +157,8 @@ input, select, textarea { font-family: inherit; }
   background: rgba(255,255,255,0.05);
 }
 .nav-item.active {
-  color: #FFFFFF;
-  background: #7A5F00;
+  color: #0A0A0B;
+  background: var(--accent);
   font-weight: 700;
 }
 .nav-item.dimmed {
