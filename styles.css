@@ -27,9 +27,9 @@
   --amber-dim:     rgba(251,146,60,0.12);
 
   /* Text */
-  --text-primary:  #F1F5F9;
-  --text-muted:    #94A3B8;
-  --text-dim:      #475569;
+  --text-primary:  #F8FAFC;
+  --text-muted:    #C0C8D6;
+  --text-dim:      #7E8FA3;
 
   /* Glass */
   --glass-bg:     rgba(255,255,255,0.04);
@@ -157,18 +157,11 @@ input, select, textarea { font-family: inherit; }
   background: rgba(255,255,255,0.05);
 }
 .nav-item.active {
-  color: var(--accent);
-  background: rgba(245,197,24,0.08);
-}
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -13px;
-  left: 10px;
-  right: 10px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 2px 2px 0 0;
+  color: #FFFFFF;
+  background: var(--bg-surface-3);
+  border: 1px solid rgba(245,197,24,0.40);
+  box-shadow: 0 0 12px rgba(245,197,24,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+  font-weight: 700;
 }
 .nav-item.dimmed {
   opacity: 0.28;
@@ -802,7 +795,7 @@ input, select, textarea { font-family: inherit; }
   background: var(--bg-surface-2);
   border: 1px solid var(--glass-border);
   border-left-width: 2px;
-  border-radius: var(--radius);
+  border-radius: 0 var(--radius) var(--radius) 0;
   padding: 12px 13px;
   cursor: pointer;
   transition: all 0.18s;
