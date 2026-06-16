@@ -93,7 +93,7 @@ function buildShell(contentHtml) {
       ${buildSidebar()}
       <main class="content-area">${contentHtml}</main>
     </div>
-    <div class="chat-widget" title="Atendimento">💬</div>`;
+    <div class="chat-widget" title="Atendimento" data-action="nav" data-value="atendimento">💬</div>`;
 }
 
 function buildFlagSwitcher() {
