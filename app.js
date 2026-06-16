@@ -168,7 +168,18 @@ function buildHomeBR() {
     </div>`;
 }
 function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
-function buildCambio()     { return '<p style="color:white">Câmbio (em breve)</p>'; }
+function buildCambio() {
+  return `
+    <div class="cambio-page">
+      <div class="page-header-flag">${buildFlagSwitcher()}</div>
+      <div class="page-title">O que você deseja fazer?</div>
+      <div class="placeholder-block">
+        <div class="placeholder-block__label">Remessa para sua conta global</div>
+        <div class="placeholder-block__sub">Interface Ouribank</div>
+      </div>
+      <div class="page-footer-link">Avisos Importantes &amp; Dúvidas</div>
+    </div>`;
+}
 function buildPosicao()    { return '<p style="color:white">Posição (em breve)</p>'; }
 function buildTrading()    { return '<p style="color:white">Trading (em breve)</p>'; }
 function buildAtendimento(){ return '<p style="color:white">Atendimento (em breve)</p>'; }
