@@ -216,7 +216,67 @@ function buildCambio() {
       <div class="page-footer-link">Avisos Importantes &amp; Dúvidas</div>
     </div>`;
 }
-function buildPosicao()    { return '<p style="color:white">Posição (em breve)</p>'; }
+const PORTFOLIO = [
+  { name: 'ETFs',       pct: 68, value: '$32,500' },
+  { name: 'Ações',      pct: 18, value: '$8,700'  },
+  { name: 'Opções',     pct: 9,  value: '$4,350'  },
+  { name: 'Renda Fixa', pct: 5,  value: '$2,400'  },
+];
+
+const ASSETS = [
+  { ticker: 'SPY',  nome: 'SPDR S&P 500',    aloc: '28%', valor: '$13,600' },
+  { ticker: 'QQQ',  nome: 'Invesco QQQ',      aloc: '22%', valor: '$10,700' },
+  { ticker: 'AAPL', nome: 'Apple Inc.',       aloc: '12%', valor: '$5,800'  },
+  { ticker: 'NVDA', nome: 'NVIDIA Corp.',     aloc: '8%',  valor: '$3,900'  },
+  { ticker: 'TLT',  nome: 'iShares 20Y Bond', aloc: '5%',  valor: '$2,400'  },
+];
+
+function buildPosicao() {
+  const rows = PORTFOLIO.map(p => `
+    <div class="asset-row">
+      <div class="asset-row__name">${p.name}</div>
+      <div class="asset-row__bar-wrap"><div class="asset-row__bar" style="width:${p.pct}%"></div></div>
+      <div class="asset-row__value">${p.value}</div>
+    </div>`).join('');
+
+  const tableRows = ASSETS.map(a => `
+    <tr>
+      <td><strong>${a.ticker}</strong></td>
+      <td>${a.nome}</td>
+      <td>${a.aloc}</td>
+      <td>${a.valor}</td>
+    </tr>`).join('');
+
+  return `
+    <div class="posicao-page">
+      ${buildFlagSwitcher()}
+      <div class="stat-cards-row">
+        <div class="stat-card">
+          <div class="stat-card__label">Saldo Conta Investimento</div>
+          <div class="stat-card__value">$48,400.00</div>
+          <div class="stat-card__sub">100% Back-end: IB Web API — Portfolio Accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Total Investido</div>
+          <div class="stat-card__value">$25,900.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Total Investido + Conta</div>
+          <div class="stat-card__value">$74,300.00</div>
+        </div>
+      </div>
+      <div class="posicao-carteira">
+        <div class="posicao-carteira__title">Minha Carteira — Lista por Classe de Ativo</div>
+        ${rows}
+        <table class="assets-table" style="margin-top:20px">
+          <thead>
+            <tr><th>Ticker</th><th>Nome</th><th>Alocação</th><th>Valor</th></tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
 function buildTrading()    { return '<p style="color:white">Trading (em breve)</p>'; }
 function buildAtendimento(){ return '<p style="color:white">Atendimento (em breve)</p>'; }
 function buildTaxCenter()  { return '<p style="color:white">Tax Center (em breve)</p>'; }
