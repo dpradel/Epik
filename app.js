@@ -96,6 +96,30 @@ function buildShell(contentHtml) {
     <div class="chat-widget" title="Atendimento">💬</div>`;
 }
 
+function buildFlagSwitcher() {
+  return `
+    <div class="flag-switcher">
+      <button class="flag-btn ${state.mode === 'BR' ? 'active' : ''}" data-action="mode" data-value="BR" title="Brasil">🇧🇷</button>
+      <button class="flag-btn ${state.mode === 'US' ? 'active' : ''}" data-action="mode" data-value="US" title="United States">🇺🇸</button>
+    </div>`;
+}
+
+const AVISOS = [
+  'Missão NY 2026 — Participe!',
+  'Alugue suas ações. Saiba como.',
+  'Renda Fixa com a EPIK. Clique aqui.',
+  'Siga a EPIK nas redes!',
+];
+
+function buildAvisosPanel() {
+  const items = AVISOS.map(a => `<div class="aviso-item">${a}</div>`).join('');
+  return `
+    <div class="avisos-panel">
+      <div class="avisos-panel__title">Central de Avisos</div>
+      ${items}
+    </div>`;
+}
+
 // ── Stubs — substituídos nas tasks seguintes ──
 function buildLogin() {
   return `
@@ -118,7 +142,21 @@ function buildLogin() {
       </div>
     </div>`;
 }
-function buildPreCadastro(){ return '<p style="color:white">Pré-cadastro (em breve)</p>'; }
+function buildPreCadastro() {
+  return `
+    <div class="pre-cadastro">
+      <div>
+        ${buildFlagSwitcher()}
+        <div class="pre-cadastro__main">
+          <div class="pre-cadastro__icon">📋</div>
+          <p class="pre-cadastro__text">Finalize seu cadastro para iniciar sua jornada com a EPIK</p>
+          <button class="pre-cadastro__cta" data-action="continuar">Continuar</button>
+          <p style="font-size:11px;color:var(--text-dim)">Tela de cadastro integrada com KYC e Suitability</p>
+        </div>
+      </div>
+      ${buildAvisosPanel()}
+    </div>`;
+}
 function buildHomeBR()     { return '<p style="color:white">Home BR (em breve)</p>'; }
 function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
 function buildCambio()     { return '<p style="color:white">Câmbio (em breve)</p>'; }

@@ -206,3 +206,92 @@ input { font-family: inherit; }
   text-align: center;
 }
 .login-footer a { color: var(--accent); font-weight: 600; }
+
+/* ── Pre-cadastro ── */
+.pre-cadastro {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr var(--right-panel-w);
+  gap: 0;
+}
+.pre-cadastro__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 24px;
+}
+.pre-cadastro__icon { font-size: 56px; }
+.pre-cadastro__text {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 420px;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pre-cadastro__cta {
+  background: var(--accent);
+  color: #0E0E0E;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px 40px;
+  border-radius: var(--radius);
+  transition: opacity 0.15s;
+}
+.pre-cadastro__cta:hover { opacity: 0.88; }
+
+/* ── Flag Switcher ── */
+.flag-switcher {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px;
+  justify-content: flex-end;
+}
+.flag-btn {
+  font-size: 20px;
+  padding: 2px;
+  opacity: 0.45;
+  border-radius: 4px;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+.flag-btn.active { opacity: 1; }
+.flag-btn:hover  { opacity: 0.85; }
+
+/* ── Central de Avisos ── */
+.avisos-panel {
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+.avisos-panel__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.aviso-item {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--bg-surface-2);
+  border-radius: var(--radius);
+  border-left: 2px solid var(--accent);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.aviso-item:hover { background: var(--accent-dim); }
