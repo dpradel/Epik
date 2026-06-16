@@ -702,3 +702,13 @@ input { font-family: inherit; }
 }
 .tax-action-card__btn:hover { opacity: 0.88; }
 .tax-action-card__note { font-size: 10px; color: var(--text-dim); }
+
+/* ── Polimentos ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Transição suave na troca de conteúdo */
+.content-area { animation: fadeIn 0.18s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
