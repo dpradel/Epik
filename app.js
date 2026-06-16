@@ -157,7 +157,16 @@ function buildPreCadastro() {
       ${buildAvisosPanel()}
     </div>`;
 }
-function buildHomeBR()     { return '<p style="color:white">Home BR (em breve)</p>'; }
+function buildHomeBR() {
+  return `
+    <div class="home-br">
+      <div class="home-br__main">
+        ${buildFlagSwitcher()}
+        <div class="home-br__banner">Banner EPIK</div>
+      </div>
+      ${buildAvisosPanel()}
+    </div>`;
+}
 function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
 function buildCambio()     { return '<p style="color:white">Câmbio (em breve)</p>'; }
 function buildPosicao()    { return '<p style="color:white">Posição (em breve)</p>'; }

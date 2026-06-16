@@ -295,3 +295,30 @@ input { font-family: inherit; }
   transition: background 0.15s;
 }
 .aviso-item:hover { background: var(--accent-dim); }
+
+/* ── Home BR ── */
+.home-br {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr var(--right-panel-w);
+}
+.home-br__main {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.home-br__banner {
+  flex: 1;
+  margin: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  background: var(--bg-surface);
+  color: var(--text-dim);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
