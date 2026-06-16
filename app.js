@@ -53,9 +53,51 @@ function handleAction(e) {
   }
 }
 
+const NAV_ITEMS = [
+  { id: 'home',        label: 'HOME',                  modes: ['BR','US'] },
+  { id: 'cambio',      label: 'Câmbio / Transferência', modes: ['BR']      },
+  { id: 'posicao',     label: 'Posição',                modes: ['US']      },
+  { id: 'trading',     label: 'Trading',                modes: ['US']      },
+  { id: 'atendimento', label: 'Atendimento',            modes: ['BR','US'] },
+  { id: 'tax-center',  label: 'Tax Center',             modes: ['BR','US'] },
+];
+
+function buildHeader() {
+  return `
+    <header class="app-header">
+      <img src="assets/logo.svg" alt="EPIK" class="app-header__logo" />
+      <div class="app-header__right">
+        <button class="app-header__user">${state.user.name}</button>
+        <button class="app-header__bell">🔔</button>
+      </div>
+    </header>`;
+}
+
+function buildSidebar() {
+  const items = NAV_ITEMS
+    .filter(item => item.modes.includes(state.mode))
+    .map(item => `
+      <button
+        class="sidebar__item ${state.screen === item.id && state.authState === 'authenticated' ? 'active' : ''}"
+        data-action="nav"
+        data-value="${item.id}">
+        ${item.label}
+      </button>`).join('');
+  return `<nav class="sidebar">${items}</nav>`;
+}
+
+function buildShell(contentHtml) {
+  return `
+    <div class="app-shell">
+      ${buildHeader()}
+      ${buildSidebar()}
+      <main class="content-area">${contentHtml}</main>
+    </div>
+    <div class="chat-widget" title="Atendimento">💬</div>`;
+}
+
 // ── Stubs — substituídos nas tasks seguintes ──
 function buildLogin()      { return '<p style="padding:20px;color:white">Login (em breve)</p>'; }
-function buildShell(c)     { return `<div style="padding:20px;color:white">${c}</div>`; }
 function buildPreCadastro(){ return '<p style="color:white">Pré-cadastro (em breve)</p>'; }
 function buildHomeBR()     { return '<p style="color:white">Home BR (em breve)</p>'; }
 function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
