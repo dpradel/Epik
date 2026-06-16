@@ -290,7 +290,40 @@ function buildTrading() {
       </div>
     </div>`;
 }
-function buildAtendimento(){ return '<p style="color:white">Atendimento (em breve)</p>'; }
+const FAQ_ITEMS = [
+  'O que são IPOs e como participar?',
+  'Como declarar investimentos no exterior no IRPF?',
+  'Como funciona o câmbio EPIK (Ouribank)?',
+  'Quais são os custos operacionais da plataforma?',
+  'Como transferir recursos para minha conta US?',
+];
+
+function buildAtendimento() {
+  const faqRows = FAQ_ITEMS.map(q => `
+    <div class="faq-item">
+      <div class="faq-item__q">${q}</div>
+    </div>`).join('');
+
+  return `
+    <div class="atendimento-page">
+      ${buildFlagSwitcher()}
+      <div class="atendimento-hero">
+        <div class="atendimento-hero__greeting">Olá ${state.user.name}, como podemos ajudar?</div>
+        <div class="search-input-wrap">
+          <input type="text" placeholder="Escreva o que quer saber aqui..." />
+        </div>
+      </div>
+      <div class="faq-section">
+        <div class="section-title">Seção FAQ</div>
+        ${faqRows}
+      </div>
+      <div class="contact-section">
+        <div class="section-title">Fale Conosco</div>
+        <div class="contact-row"><span class="contact-row__icon">📞</span> Telefone: +55 (11) 0000-0000</div>
+        <div class="contact-row"><span class="contact-row__icon">💬</span> WhatsApp: +55 (11) 90000-0000</div>
+      </div>
+    </div>`;
+}
 function buildTaxCenter()  { return '<p style="color:white">Tax Center (em breve)</p>'; }
 
 render();
