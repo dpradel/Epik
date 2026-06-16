@@ -63,7 +63,11 @@ function handleAction(e) {
     case 'kyc-submit':    setState({ authState: 'authenticated', screen: 'home', mode: 'BR', kycCompleted: true }); break;
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
     case 'nav':           setState({ screen: value }); break;
-    case 'mode':          setState({ mode: value, screen: 'home' }); break;
+    case 'mode': {
+      const available = NAV_ITEMS.find(n => n.id === state.screen)?.modes.includes(value);
+      setState({ mode: value, screen: available ? state.screen : 'home' });
+      break;
+    }
     case 'toggle-faq': {
       const clicked = e.currentTarget;
       const isOpen = clicked.classList.contains('open');
@@ -110,50 +114,52 @@ const FLAG_US = `<svg width="26" height="18" viewBox="0 0 26 18" xmlns="http://w
   <rect width="10.4" height="9.69" fill="#3C3B6E" rx="0"/>
 </svg>`;
 
-function buildHeader() {
+function buildTopNav() {
+  const items = NAV_ITEMS.map(item => {
+    const isActive = state.screen === item.id && state.authState === 'authenticated';
+    const isAvailable = item.modes.includes(state.mode);
+    const cls = ['nav-item', isActive ? 'active' : '', !isAvailable ? 'dimmed' : ''].filter(Boolean).join(' ');
+    return `
+      <button class="${cls}" data-action="nav" data-value="${item.id}">
+        <i data-lucide="${item.icon}" style="width:14px;height:14px"></i>
+        ${item.label}
+      </button>`;
+  }).join('');
+
   return `
-    <header class="app-header">
-      <img src="assets/logo.svg" alt="EPIK" class="app-header__logo" />
-      <div class="app-header__right">
-        <button class="app-header__notifications">
-          <i data-lucide="bell" style="width:16px;height:16px"></i>
+    <nav class="app-nav">
+      <img src="assets/logo.svg" alt="EPIK" class="app-nav__logo" />
+      <div class="app-nav__items">${items}</div>
+      <div class="app-nav__right">
+        <button class="nav-flag-btn ${state.mode === 'BR' ? 'active' : ''}" data-action="mode" data-value="BR" title="Brasil">
+          ${FLAG_BR}
         </button>
-        <button class="app-header__user">
+        <button class="nav-flag-btn ${state.mode === 'US' ? 'active' : ''}" data-action="mode" data-value="US" title="United States">
+          ${FLAG_US}
+        </button>
+        <button class="nav-icon-btn">
+          <i data-lucide="bell" style="width:15px;height:15px"></i>
+        </button>
+        <button class="nav-user-btn">
           <i data-lucide="user" style="width:14px;height:14px"></i>
           ${state.user.name}
         </button>
       </div>
-    </header>`;
-}
-
-function buildSidebar() {
-  const items = NAV_ITEMS
-    .filter(item => item.modes.includes(state.mode))
-    .map(item => {
-      const isActive = state.screen === item.id && state.authState === 'authenticated';
-      return `
-        <button
-          class="sidebar__item${isActive ? ' active' : ''}"
-          data-action="nav"
-          data-value="${item.id}">
-          <i data-lucide="${item.icon}" style="width:15px;height:15px"></i>
-          ${item.label}
-        </button>`;
-    }).join('');
-  return `<nav class="sidebar">${items}</nav>`;
+    </nav>`;
 }
 
 function buildShell(contentHtml) {
   return `
     <div class="app-shell">
-      ${buildHeader()}
-      ${buildSidebar()}
+      ${buildTopNav()}
       <main class="content-area">${contentHtml}</main>
     </div>
     <div class="chat-widget" title="Atendimento" data-action="nav" data-value="atendimento">
       <i data-lucide="message-circle" style="width:22px;height:22px"></i>
     </div>`;
 }
+
+// buildHeader() and buildSidebar() removed — replaced by buildTopNav()
 
 function buildFlagSwitcher() {
   return `
@@ -215,7 +221,7 @@ function buildAvisosPanel() {
           <div class="avisos-panel__subtitle">Novidades e alertas</div>
         </div>
       </div>
-      ${cards}
+      <div class="avisos-cards-grid">${cards}</div>
     </div>`;
 }
 
@@ -572,7 +578,6 @@ function buildPreCadastro() {
   return `
     <div class="pre-cadastro">
       <div class="pre-cadastro__main">
-        ${buildFlagSwitcher()}
         <div class="pre-cadastro__hero">
           <div class="pre-cadastro__hero-icon">
             <i data-lucide="user-check" style="width:28px;height:28px"></i>
@@ -614,20 +619,17 @@ function buildHomeBR() {
 
   return `
     <div class="home-br">
-      <div class="home-br__main">
-        ${buildFlagSwitcher()}
-        ${kycPrompt}
-        <div class="home-br__banner">
-          <div class="banner-blob"></div>
-          <div class="banner-content">
-            <div class="banner-eyebrow">Plataforma de Investimentos</div>
-            <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
-            <p class="banner-subtitle">De ações americanas a renda fixa, tudo em um só lugar com a segurança da EPIK.</p>
-            <button class="banner-cta">
-              Explorar produtos
-              <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
-            </button>
-          </div>
+      ${kycPrompt}
+      <div class="home-br__banner">
+        <div class="banner-blob"></div>
+        <div class="banner-content">
+          <div class="banner-eyebrow">Plataforma de Investimentos</div>
+          <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
+          <p class="banner-subtitle">De ações americanas a renda fixa, tudo em um só lugar com a segurança da EPIK.</p>
+          <button class="banner-cta">
+            Explorar produtos
+            <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+          </button>
         </div>
       </div>
       ${buildAvisosPanel()}
@@ -654,8 +656,11 @@ function buildHomeUS() {
 
   return `
     <div class="home-us">
-      ${buildFlagSwitcher()}
-      <div class="home-us__invest-row">
+      <div class="home-us__topbar">
+        <div class="home-us__greeting">
+          <div class="home-us__title">Portfolio Overview</div>
+          <div class="home-us__subtitle">Conta Interactive Brokers — Atualizado hoje</div>
+        </div>
         <button class="btn-invest" data-action="nav" data-value="trading">Investir</button>
       </div>
       <div class="stat-cards-row">
@@ -701,23 +706,23 @@ function buildHomeUS() {
               <line x1="44" y1="48"  x2="500" y2="48"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
               <line x1="44" y1="86"  x2="500" y2="86"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
               <line x1="44" y1="124" x2="500" y2="124" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-              <text x="2"  y="13"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">62k</text>
-              <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">55k</text>
-              <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">49k</text>
-              <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">44k</text>
+              <text x="2"  y="13"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Plus Jakarta Sans,sans-serif">62k</text>
+              <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Plus Jakarta Sans,sans-serif">55k</text>
+              <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Plus Jakarta Sans,sans-serif">49k</text>
+              <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Plus Jakarta Sans,sans-serif">44k</text>
               <path d="${chartFill}" class="chart-fill-path" fill="url(#rGrad)"/>
               <path d="${chartLine}" class="chart-line-path" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="500" cy="4" r="4" fill="var(--accent-color, #FBBD0B)"/>
               <circle cx="500" cy="4" r="7" fill="rgba(251,189,11,0.2)"/>
-              <text x="56"  y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
-              <text x="110" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Fev</text>
-              <text x="164" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mar</text>
-              <text x="218" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Abr</text>
-              <text x="272" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mai</text>
-              <text x="326" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jun</text>
-              <text x="380" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jul</text>
-              <text x="434" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Ago</text>
-              <text x="480" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Set</text>
+              <text x="56"  y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Jan</text>
+              <text x="110" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Fev</text>
+              <text x="164" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Mar</text>
+              <text x="218" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Abr</text>
+              <text x="272" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Mai</text>
+              <text x="326" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Jun</text>
+              <text x="380" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Jul</text>
+              <text x="434" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Ago</text>
+              <text x="480" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Set</text>
             </svg>
           </div>
           <div class="chart-stats-row">
@@ -752,7 +757,6 @@ function buildHomeUS() {
 function buildCambio() {
   return `
     <div class="cambio-page">
-      <div class="page-header-flag">${buildFlagSwitcher()}</div>
       <div class="page-title">O que você deseja fazer?</div>
       <div class="placeholder-block">
         <i data-lucide="arrow-right-left" style="width:40px;height:40px"></i>
@@ -858,7 +862,6 @@ function buildPosicao() {
 
   return `
     <div class="posicao-page">
-      ${buildFlagSwitcher()}
       <div class="stat-cards-row">
         <div class="stat-card">
           <div class="stat-card__label">Saldo Conta Investimento</div>
@@ -891,7 +894,6 @@ function buildPosicao() {
 function buildTrading() {
   return `
     <div class="trading-page">
-      ${buildFlagSwitcher()}
       <div class="trading-hb-wrap">
         <div class="trading-hb-header">
           <div class="trading-hb-badge">
@@ -940,7 +942,6 @@ function buildAtendimento() {
 
   return `
     <div class="atendimento-page">
-      ${buildFlagSwitcher()}
       <div class="atendimento-hero">
         <div class="atendimento-hero__greeting">Olá ${state.user.name}, como podemos ajudar?</div>
         <div class="search-input-wrap">
@@ -970,7 +971,6 @@ function buildAtendimento() {
 function buildTaxCenter() {
   return `
     <div class="tax-page">
-      ${buildFlagSwitcher()}
       <div class="tax-import-area">
         <i data-lucide="upload-cloud" style="width:44px;height:44px"></i>
         <div class="tax-import-area__label">Importar Operações</div>
