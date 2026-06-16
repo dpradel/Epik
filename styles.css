@@ -520,3 +520,45 @@ input { font-family: inherit; }
   font-variant-numeric: tabular-nums;
 }
 .assets-table tr:last-child td { border-bottom: none; }
+
+/* ── Trading ── */
+.trading-page { flex: 1; display: flex; flex-direction: column; padding: 0 20px 20px; }
+.trading-label {
+  text-align: center;
+  margin: 12px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.trading-sublabel {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.trading-placeholder {
+  flex: 1;
+  border: 2px dashed rgba(251,189,11,0.3);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 360px;
+  background: var(--bg-surface);
+}
+.trading-placeholder__icon { font-size: 48px; opacity: 0.3; }
+.trading-placeholder__text {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.trading-placeholder__note {
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}

@@ -277,7 +277,19 @@ function buildPosicao() {
       </div>
     </div>`;
 }
-function buildTrading()    { return '<p style="color:white">Trading (em breve)</p>'; }
+function buildTrading() {
+  return `
+    <div class="trading-page">
+      ${buildFlagSwitcher()}
+      <div class="trading-label">HB Nelogica</div>
+      <div class="trading-sublabel">Negociação em conta real</div>
+      <div class="trading-placeholder">
+        <div class="trading-placeholder__icon">📊</div>
+        <div class="trading-placeholder__text">[ HB Nelogica ]</div>
+        <div class="trading-placeholder__note">Espaço reservado para integração</div>
+      </div>
+    </div>`;
+}
 function buildAtendimento(){ return '<p style="color:white">Atendimento (em breve)</p>'; }
 function buildTaxCenter()  { return '<p style="color:white">Tax Center (em breve)</p>'; }
 
