@@ -3,11 +3,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Backgrounds — navy-dark, not pure black */
-  --bg-base:      #070911;
-  --bg-surface:   #0D1120;
-  --bg-surface-2: #141928;
-  --bg-surface-3: #1C2438;
+  /* Backgrounds — dark gray/black, no blue tint */
+  --bg-base:      #0A0A0B;
+  --bg-surface:   #111113;
+  --bg-surface-2: #18181B;
+  --bg-surface-3: #222226;
 
   /* Brand gold */
   --accent:        #F5C518;
@@ -55,7 +55,7 @@
   /* Keep for backwards compat */
   --border:        rgba(245,197,24,0.28);
   --border-subtle: rgba(255,255,255,0.06);
-  --bg-primary:    #070911;
+  --bg-primary:    #0A0A0B;
   --sidebar-w:     0px;
   --header-h:      62px;
   --right-panel-w: 0px;
@@ -65,7 +65,7 @@ html, body {
   height: 100%;
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -79,9 +79,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 0% 0%,   rgba(124,106,250,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(245,197,24,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 50% 10%,  rgba(56,189,248,0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 15% 15%, rgba(245,197,24,0.05) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 85% 85%, rgba(245,197,24,0.03) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
 }
@@ -223,7 +222,7 @@ input, select, textarea { font-family: inherit; }
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   color: var(--text-muted);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
   font-weight: 600;
   padding: 7px 14px;
@@ -276,7 +275,7 @@ input, select, textarea { font-family: inherit; }
 
 /* ── Buttons ── */
 .btn-primary {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -764,50 +763,63 @@ input, select, textarea { font-family: inherit; }
 .avisos-panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  position: sticky;
+  top: 24px;
 }
 .avisos-panel__header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 2px;
 }
 .avisos-panel__header-icon {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   background: var(--accent-dim);
-  border: 1px solid rgba(245,197,24,0.25);
+  border: 1px solid rgba(245,197,24,0.22);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
+  flex-shrink: 0;
 }
-.avisos-panel__title   { font-size: 14px; font-weight: 700; }
+.avisos-panel__title   { font-size: 13px; font-weight: 700; }
 .avisos-panel__subtitle { font-size: 11px; color: var(--text-dim); }
-/* Avisos grid — 2 or 4 columns */
+/* Avisos grid — single column for right panel */
 .avisos-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .aviso-card {
   display: flex;
   gap: 11px;
   align-items: flex-start;
-  background: var(--glass-bg);
+  background: var(--bg-surface-2);
   border: 1px solid var(--glass-border);
+  border-left-width: 2px;
   border-radius: var(--radius);
-  padding: 12px 11px;
+  padding: 12px 13px;
   cursor: pointer;
   transition: all 0.18s;
+  animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .aviso-card:hover {
-  background: rgba(251,189,11,0.05);
-  border-color: rgba(251,189,11,0.18);
-  box-shadow: var(--glow-xs);
-  transform: translateY(-1px);
+  background: var(--bg-surface-3);
+  transform: translateX(2px);
 }
+.aviso-card--purple { border-left-color: rgba(168,85,247,0.70); }
+.aviso-card--purple:hover { box-shadow: -3px 0 12px rgba(168,85,247,0.15); }
+.aviso-card--cyan   { border-left-color: rgba(34,211,238,0.70); }
+.aviso-card--cyan:hover   { box-shadow: -3px 0 12px rgba(34,211,238,0.15); }
+.aviso-card--gold   { border-left-color: rgba(245,197,24,0.70); }
+.aviso-card--gold:hover   { box-shadow: -3px 0 12px rgba(245,197,24,0.15); }
+.aviso-card--green  { border-left-color: rgba(52,211,153,0.70); }
+.aviso-card--green:hover  { box-shadow: -3px 0 12px rgba(52,211,153,0.15); }
 .aviso-card__icon-wrap {
   width: 34px;
   height: 34px;
@@ -967,11 +979,18 @@ input, select, textarea { font-family: inherit; }
 
 /* ── Home BR ── */
 .home-br {
+  display: grid;
+  grid-template-columns: 1fr 288px;
+  gap: 20px;
+  align-items: start;
+  padding: 24px 32px 32px;
+}
+.home-br__left {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  min-width: 0;
 }
-.home-br__main { flex: 1; }
 .home-br__banner {
   position: relative;
   background: linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3));
@@ -1018,7 +1037,7 @@ input, select, textarea { font-family: inherit; }
   gap: 8px;
   background: var(--accent);
   color: #07090E;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -1041,7 +1060,7 @@ input, select, textarea { font-family: inherit; }
 }
 
 /* ── Page base padding ── */
-.home-br, .home-us, .cambio-page, .posicao-page, .trading-page,
+.home-us, .cambio-page, .posicao-page, .trading-page,
 .atendimento-page, .tax-center-page, .pre-cadastro {
   padding: 24px 32px 32px;
 }
@@ -1123,18 +1142,18 @@ input, select, textarea { font-family: inherit; }
   overflow: hidden;
   animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
+.stat-cards-row .stat-card:nth-child(1) {
+  animation-delay: 0.04s;
+  box-shadow: 0 0 0 1px rgba(245,197,24,0.10), 0 8px 32px rgba(245,197,24,0.06);
 }
-.stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent), transparent); }
-.stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--violet), transparent); }
-.stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--sky), transparent); }
-.stat-cards-row .stat-card:nth-child(1) { animation-delay: 0.04s; }
-.stat-cards-row .stat-card:nth-child(2) { animation-delay: 0.10s; }
-.stat-cards-row .stat-card:nth-child(3) { animation-delay: 0.16s; }
+.stat-cards-row .stat-card:nth-child(2) {
+  animation-delay: 0.10s;
+  box-shadow: 0 0 0 1px rgba(124,106,250,0.10), 0 8px 32px rgba(124,106,250,0.06);
+}
+.stat-cards-row .stat-card:nth-child(3) {
+  animation-delay: 0.16s;
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.10), 0 8px 32px rgba(56,189,248,0.06);
+}
 .stat-card__label {
   font-size: 10px;
   font-weight: 700;
@@ -1565,13 +1584,10 @@ input, select, textarea { font-family: inherit; }
 }
 
 /* ── Aviso cards staggered entrance ── */
-.aviso-card {
-  animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.avisos-panel .aviso-card:nth-child(1) { animation-delay: 0.06s; }
-.avisos-panel .aviso-card:nth-child(2) { animation-delay: 0.12s; }
-.avisos-panel .aviso-card:nth-child(3) { animation-delay: 0.18s; }
-.avisos-panel .aviso-card:nth-child(4) { animation-delay: 0.24s; }
+.avisos-cards-grid .aviso-card:nth-child(1) { animation-delay: 0.06s; }
+.avisos-cards-grid .aviso-card:nth-child(2) { animation-delay: 0.12s; }
+.avisos-cards-grid .aviso-card:nth-child(3) { animation-delay: 0.18s; }
+.avisos-cards-grid .aviso-card:nth-child(4) { animation-delay: 0.24s; }
 
 /* ── KYC prompt slide-down ── */
 @keyframes slideDown {
@@ -1761,7 +1777,7 @@ input, select, textarea { font-family: inherit; }
 .home-us__title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
 .home-us__subtitle { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
 .btn-invest {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--accent);
   color: #07090E;
   font-size: 12px;
