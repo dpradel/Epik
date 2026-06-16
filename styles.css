@@ -1261,21 +1261,40 @@ input, select, textarea { font-family: inherit; }
 .assets-table tr:hover td { background: var(--glass-bg); }
 
 /* ── Trading ── */
-.trading-page { flex: 1; display: flex; flex-direction: column; padding: 0 20px 20px; }
-.trading-label {
-  text-align: center;
-  margin: 14px 0 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.trading-page { flex: 1; display: flex; flex-direction: column; padding: 0 20px 20px; gap: 10px; }
+.trading-hb-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(251,189,11,0.18);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #0a0a0a;
+  box-shadow: var(--glow-xs);
 }
-.trading-sublabel {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-bottom: 14px;
+.trading-hb-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.trading-hb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.trading-hb-badge .lucide { opacity: 0.8; }
+.trading-hb-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 .trading-placeholder {
   flex: 1;

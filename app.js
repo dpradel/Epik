@@ -892,12 +892,14 @@ function buildTrading() {
   return `
     <div class="trading-page">
       ${buildFlagSwitcher()}
-      <div class="trading-label">HB Nelogica</div>
-      <div class="trading-sublabel">Negociação em conta real</div>
-      <div class="trading-placeholder">
-        <i data-lucide="monitor" style="width:52px;height:52px"></i>
-        <div class="trading-placeholder__text">[ HB Nelogica ]</div>
-        <div class="trading-placeholder__note">Espaço reservado para integração</div>
+      <div class="trading-hb-wrap">
+        <div class="trading-hb-header">
+          <div class="trading-hb-badge">
+            <i data-lucide="monitor" style="width:13px;height:13px"></i>
+            HB Nelogica — Negociação em Conta Real
+          </div>
+        </div>
+        <img src="assets/Market Depth.png" alt="HB Nelogica — Market Depth" class="trading-hb-img" />
       </div>
     </div>`;
 }
