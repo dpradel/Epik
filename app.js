@@ -324,6 +324,30 @@ function buildAtendimento() {
       </div>
     </div>`;
 }
-function buildTaxCenter()  { return '<p style="color:white">Tax Center (em breve)</p>'; }
+function buildTaxCenter() {
+  return `
+    <div class="tax-page">
+      ${buildFlagSwitcher()}
+      <div class="tax-import-area">
+        <div class="tax-import-area__icon">📥</div>
+        <div class="tax-import-area__label">Importar Operações</div>
+      </div>
+      <div class="tax-actions">
+        <div class="tax-action-card">
+          <div class="tax-action-card__label">Guia IRPF</div>
+          <button class="tax-action-card__btn">Acessar</button>
+          <div class="tax-action-card__note">Acessa conteúdo da FAQ / Atendimento</div>
+        </div>
+        <div class="tax-action-card">
+          <div class="tax-action-card__label">Cadastrar Operações</div>
+          <button class="tax-action-card__btn">Cadastrar</button>
+        </div>
+        <div class="tax-action-card">
+          <div class="tax-action-card__label">Extrato das Operações</div>
+          <button class="tax-action-card__btn">Gerar CSV</button>
+        </div>
+      </div>
+    </div>`;
+}
 
 render();
