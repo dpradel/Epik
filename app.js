@@ -97,7 +97,27 @@ function buildShell(contentHtml) {
 }
 
 // ── Stubs — substituídos nas tasks seguintes ──
-function buildLogin()      { return '<p style="padding:20px;color:white">Login (em breve)</p>'; }
+function buildLogin() {
+  return `
+    <div class="login-page">
+      <div class="login-card">
+        <img src="assets/logo.svg" alt="EPIK" class="login-card__logo" />
+        <p class="login-card__title">Acesse sua conta</p>
+        <div class="form-fields">
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="seu@email.com" />
+          </div>
+          <div class="form-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" placeholder="••••••••" />
+          </div>
+        </div>
+        <button class="btn-primary" data-action="login">Entrar</button>
+        <p class="login-footer">Não tem conta? <a href="#">Criar conta</a></p>
+      </div>
+    </div>`;
+}
 function buildPreCadastro(){ return '<p style="color:white">Pré-cadastro (em breve)</p>'; }
 function buildHomeBR()     { return '<p style="color:white">Home BR (em breve)</p>'; }
 function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
