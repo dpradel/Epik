@@ -37,6 +37,7 @@ function buildScreen() {
 
 function attachEvents() {
   document.querySelectorAll('[data-action]').forEach(el => {
+    el.removeEventListener('click', handleAction);
     el.addEventListener('click', handleAction);
   });
 }
