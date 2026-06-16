@@ -1,0 +1,39 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary:    #0E0E0E;
+  --bg-surface:    #1A1A1A;
+  --bg-surface-2:  #242424;
+  --accent:        #FBBD0B;
+  --accent-dim:    rgba(251, 189, 11, 0.15);
+  --text-primary:  #FFFFFF;
+  --text-muted:    #EDEDED;
+  --text-dim:      #888888;
+  --border:        rgba(251, 189, 11, 0.35);
+  --border-subtle: #2A2A2A;
+  --radius:        6px;
+  --radius-lg:     12px;
+  --sidebar-w:     164px;
+  --header-h:      56px;
+  --right-panel-w: 240px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+input { font-family: inherit; }
+
+.hidden { display: none !important; }
