@@ -1,9 +1,11 @@
 // app.js
 const state = {
-  authState: 'login',   // 'login' | 'signup' | 'pre-cadastro' | 'kyc' | 'authenticated'
+  authState: 'authenticated',   // 'login' | 'signup' | 'pre-cadastro' | 'kyc' | 'authenticated'
   mode: 'BR',           // 'BR' | 'US'
   screen: 'home',
   kycStep: 1,           // 1-4 form steps, 5 = success
+  kycCompleted: false,
+  faqOpen: null,
   user: { name: 'Érico' },
 };
 
@@ -20,10 +22,10 @@ function render() {
 }
 
 function buildApp() {
-  if (state.authState === 'login')         return buildLogin();
-  if (state.authState === 'signup')        return buildSignup();
-  if (state.authState === 'kyc')           return buildKycForm();
-  if (state.authState === 'pre-cadastro')  return buildShell(buildPreCadastro());
+  if (state.authState === 'login')        return buildLogin();
+  if (state.authState === 'signup')       return buildSignup();
+  if (state.authState === 'kyc')          return buildKycForm();
+  if (state.authState === 'pre-cadastro' && state.mode === 'BR') return buildShell(buildPreCadastro());
   return buildShell(buildScreen());
 }
 
@@ -58,10 +60,11 @@ function handleAction(e) {
     case 'start-kyc':     setState({ authState: 'kyc', kycStep: 1 }); break;
     case 'kyc-next':      setState({ kycStep: Math.min(state.kycStep + 1, 5) }); break;
     case 'kyc-prev':      setState({ kycStep: Math.max(state.kycStep - 1, 1) }); break;
-    case 'kyc-submit':    setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
+    case 'kyc-submit':    setState({ authState: 'authenticated', screen: 'home', mode: 'BR', kycCompleted: true }); break;
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
     case 'nav':           setState({ screen: value }); break;
     case 'mode':          setState({ mode: value, screen: 'home' }); break;
+    case 'toggle-faq':    setState({ faqOpen: state.faqOpen === +value ? null : +value }); break;
   }
 }
 
@@ -178,12 +181,14 @@ const AVISOS = [
 function buildAvisosPanel() {
   const cards = AVISOS.map(a => `
     <div class="aviso-card">
-      <div class="aviso-card__meta">
-        <span class="aviso-card__icon"><i data-lucide="${a.icon}" style="width:11px;height:11px;color:var(--text-dim)"></i></span>
-        <span class="aviso-tag aviso-tag--${a.tagStyle}">${a.tag}</span>
+      <div class="aviso-card__icon-wrap aviso-card__icon-wrap--${a.tagStyle}">
+        <i data-lucide="${a.icon}" style="width:16px;height:16px"></i>
       </div>
-      <div class="aviso-card__title">${a.title}</div>
-      <div class="aviso-card__desc">${a.desc}</div>
+      <div class="aviso-card__body">
+        <div class="aviso-tag aviso-tag--${a.tagStyle}">${a.tag}</div>
+        <div class="aviso-card__title">${a.title}</div>
+        <div class="aviso-card__desc">${a.desc}</div>
+      </div>
     </div>`).join('');
 
   return `
@@ -568,10 +573,9 @@ function buildPreCadastro() {
         <div class="partner-pipeline">${pipeline}</div>
         <div class="pre-cadastro__actions">
           <button class="btn-primary btn-primary--lg" data-action="start-kyc">
-            <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
             Completar Cadastro
+            <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
           </button>
-          <button class="btn-ghost" data-action="continuar">Acessar depois</button>
         </div>
       </div>
       ${buildAvisosPanel()}
@@ -580,28 +584,37 @@ function buildPreCadastro() {
 
 // ── Home BR ──
 function buildHomeBR() {
+  const kycPrompt = !state.kycCompleted ? `
+    <div class="kyc-prompt">
+      <div class="kyc-prompt__icon">
+        <i data-lucide="user-check" style="width:18px;height:18px"></i>
+      </div>
+      <div class="kyc-prompt__text">
+        <div class="kyc-prompt__title">Complete seu cadastro para começar a investir</div>
+        <div class="kyc-prompt__sub">Falta pouco — verifique sua identidade e ative sua conta nos EUA</div>
+      </div>
+      <button class="kyc-prompt__btn" data-action="start-kyc">
+        Completar cadastro
+        <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+      </button>
+    </div>` : '';
+
   return `
     <div class="home-br">
       <div class="home-br__main">
         ${buildFlagSwitcher()}
+        ${kycPrompt}
         <div class="home-br__banner">
+          <div class="banner-blob"></div>
           <div class="banner-content">
             <div class="banner-eyebrow">Plataforma de Investimentos</div>
             <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
             <p class="banner-subtitle">De ações americanas a renda fixa, tudo em um só lugar com a segurança da EPIK.</p>
             <button class="banner-cta">
-              <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
               Explorar produtos
+              <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
             </button>
           </div>
-          <svg class="banner-deco" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path d="M0 70 C25 58, 45 25, 75 32 C105 39, 120 12, 150 18 C170 22, 185 8, 220 12"
-                  stroke="rgba(251,189,11,0.45)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-            <path d="M0 80 C30 72, 55 48, 85 55 C115 62, 135 34, 165 28 C185 24, 200 18, 220 22"
-                  stroke="rgba(251,189,11,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            <path d="M0 85 C40 80, 70 62, 100 68 C130 74, 155 52, 180 44 C200 38, 210 34, 220 36"
-                  stroke="rgba(251,189,11,0.07)" stroke-width="1" fill="none" stroke-linecap="round"/>
-          </svg>
         </div>
       </div>
       ${buildAvisosPanel()}
@@ -623,9 +636,19 @@ function buildHomeUS() {
       <span class="carteira-legend-item__pct">${l.pct}</span>
     </div>`).join('');
 
+  const chartLine = 'M44,118 C70,112 85,100 100,105 C122,112 138,82 160,68 C182,54 196,62 218,52 C240,42 255,48 278,36 C301,24 316,28 340,18 C364,8 390,6 416,5 C438,4 470,5 500,4';
+  const chartFill = chartLine + ' L500,138 L44,138 Z';
+
   return `
     <div class="home-us">
       ${buildFlagSwitcher()}
+      <div class="home-us__invest-row">
+        <button class="btn-invest" data-action="nav" data-value="trading">
+          <i data-lucide="trending-up" style="width:15px;height:15px"></i>
+          Investir agora
+          <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+        </button>
+      </div>
       <div class="stat-cards-row">
         <div class="stat-card">
           <div class="stat-card__label">Saldo Conta Investimento</div>
@@ -648,13 +671,63 @@ function buildHomeUS() {
       </div>
       <div class="home-us__body">
         <div class="chart-area">
-          <div class="chart-area__tabs">
-            <button class="chart-tab active">Ações</button>
-            <button class="chart-tab">Posição</button>
+          <div class="chart-area__header">
+            <div class="chart-area__title">Rentabilidade do Portfólio</div>
+            <div class="chart-area__period-pills">
+              <button class="chart-period-pill">1M</button>
+              <button class="chart-period-pill">3M</button>
+              <button class="chart-period-pill active">6M</button>
+              <button class="chart-period-pill">1A</button>
+            </div>
           </div>
-          <div class="chart-placeholder">
-            <i data-lucide="bar-chart-2" style="width:32px;height:32px"></i>
-            Gráfico de Rentabilidade
+          <div class="chart-svg-wrap">
+            <svg class="rentabilidade-svg" viewBox="0 0 544 142" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="rGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="rgba(251,189,11,0.22)"/>
+                  <stop offset="100%" stop-color="rgba(251,189,11,0)"/>
+                </linearGradient>
+              </defs>
+              <line x1="44" y1="10"  x2="500" y2="10"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="44" y1="48"  x2="500" y2="48"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="44" y1="86"  x2="500" y2="86"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="44" y1="124" x2="500" y2="124" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <text x="2"  y="13"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">62k</text>
+              <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">55k</text>
+              <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">49k</text>
+              <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">44k</text>
+              <path d="${chartFill}" fill="url(#rGrad)"/>
+              <path d="${chartLine}" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="500" cy="4" r="4" fill="var(--accent-color, #FBBD0B)"/>
+              <circle cx="500" cy="4" r="7" fill="rgba(251,189,11,0.2)"/>
+              <text x="56"  y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
+              <text x="110" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Fev</text>
+              <text x="164" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mar</text>
+              <text x="218" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Abr</text>
+              <text x="272" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mai</text>
+              <text x="326" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jun</text>
+              <text x="380" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jul</text>
+              <text x="434" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Ago</text>
+              <text x="480" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Set</text>
+            </svg>
+          </div>
+          <div class="chart-stats-row">
+            <div class="chart-stat">
+              <div class="chart-stat__label">Início do período</div>
+              <div class="chart-stat__value">$44,200</div>
+            </div>
+            <div class="chart-stat">
+              <div class="chart-stat__label">Valor atual</div>
+              <div class="chart-stat__value">$48,400</div>
+            </div>
+            <div class="chart-stat">
+              <div class="chart-stat__label">Rentabilidade</div>
+              <div class="chart-stat__value"><span class="chart-stat__delta">+9.5%</span></div>
+            </div>
+            <div class="chart-stat">
+              <div class="chart-stat__label">Dividendos recebidos</div>
+              <div class="chart-stat__value">$840</div>
+            </div>
           </div>
         </div>
         <div class="carteira-panel">
@@ -680,6 +753,52 @@ function buildCambio() {
       <div class="page-footer-link">
         <i data-lucide="info" style="width:14px;height:14px"></i>
         Avisos Importantes &amp; Dúvidas
+      </div>
+      <div class="cambio-info">
+        <div class="cambio-info__block">
+          <div class="cambio-info__block-title cambio-info__block-title--warn">
+            <i data-lucide="alert-triangle" style="width:14px;height:14px"></i>
+            Avisos Importantes
+          </div>
+          <div class="cambio-aviso-row">
+            <i data-lucide="circle-dot" style="width:13px;height:13px"></i>
+            Limite de remessa diária: US$ 10.000 por operação
+          </div>
+          <div class="cambio-aviso-row">
+            <i data-lucide="circle-dot" style="width:13px;height:13px"></i>
+            Prazo de liquidação: D+2 dias úteis para câmbio comercial
+          </div>
+          <div class="cambio-aviso-row">
+            <i data-lucide="circle-dot" style="width:13px;height:13px"></i>
+            Taxa cambial atualizada às 18h de cada dia útil
+          </div>
+          <div class="cambio-aviso-row">
+            <i data-lucide="circle-dot" style="width:13px;height:13px"></i>
+            IOF de 0,38% aplicado conforme legislação vigente
+          </div>
+        </div>
+        <div class="cambio-info__block">
+          <div class="cambio-info__block-title cambio-info__block-title--info">
+            <i data-lucide="help-circle" style="width:14px;height:14px"></i>
+            Dúvidas Frequentes
+          </div>
+          <div class="cambio-faq-row">
+            Qual o spread cobrado nas operações de câmbio?
+            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          </div>
+          <div class="cambio-faq-row">
+            Posso fazer remessas para contas de terceiros?
+            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          </div>
+          <div class="cambio-faq-row">
+            Como é calculado o IOF nas remessas?
+            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          </div>
+          <div class="cambio-faq-row">
+            Quando o valor chega na minha conta americana?
+            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          </div>
+        </div>
       </div>
     </div>`;
 }
@@ -764,21 +883,40 @@ function buildTrading() {
 
 // ── Atendimento ──
 const FAQ_ITEMS = [
-  'O que são IPOs e como participar?',
-  'Como declarar investimentos no exterior no IRPF?',
-  'Como funciona o câmbio EPIK (Ouribank)?',
-  'Quais são os custos operacionais da plataforma?',
-  'Como transferir recursos para minha conta US?',
+  {
+    q: 'O que são IPOs e como participar?',
+    a: 'Um IPO (Initial Public Offering) é a abertura de capital de uma empresa na bolsa. Na EPIK, você acessa IPOs americanos diretamente via Interactive Brokers. Acesse Trading, selecione "IPOs Disponíveis" e indique o valor desejado. Disponível para clientes com conta ativa e saldo mínimo de US$ 500.'
+  },
+  {
+    q: 'Como declarar investimentos no exterior no IRPF?',
+    a: 'Declare na ficha "Bens e Direitos" do IRPF usando o código 06 (ações/ETFs no exterior). Dividendos recebidos vão em "Rendimentos Sujeitos à Tributação Exclusiva". O Tax Center da EPIK gera relatórios prontos para importação no programa da Receita Federal — acesse em Tax Center → Extrato das Operações.'
+  },
+  {
+    q: 'Como funciona o câmbio EPIK (Ouribank)?',
+    a: 'O câmbio é realizado via Ouribank, instituição financeira autorizada pelo Banco Central. Você solicita a remessa em reais, o Ouribank converte pela taxa comercial + spread EPIK de 0,8%, e o valor chega em dólares na sua conta Interactive Brokers em até D+2 úteis. IOF de 0,38% é aplicado conforme legislação.'
+  },
+  {
+    q: 'Quais são os custos operacionais da plataforma?',
+    a: 'Custódia: 0,15% a.a. sobre o patrimônio. Ações e ETFs: US$ 0 por operação (zero brokerage). Opções: US$ 0,65 por contrato. Câmbio: spread de 0,8% + IOF 0,38%. Sem taxa de abertura de conta ou manutenção mensal fixa.'
+  },
+  {
+    q: 'Como transferir recursos para minha conta US?',
+    a: '1. Acesse Câmbio / Transferência no menu lateral. 2. Informe o valor em reais que deseja enviar. 3. Confirme a taxa de câmbio do dia. 4. Realize PIX ou TED para a conta Ouribank indicada. 5. Em até D+2 úteis, o valor aparece em dólares na sua conta Interactive Brokers.'
+  },
 ];
 
 function buildAtendimento() {
-  const faqRows = FAQ_ITEMS.map(q => `
-    <div class="faq-item">
-      <div class="faq-item__q">
-        ${q}
-        <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
-      </div>
-    </div>`).join('');
+  const faqRows = FAQ_ITEMS.map((item, i) => {
+    const isOpen = state.faqOpen === i;
+    return `
+      <div class="faq-item${isOpen ? ' open' : ''}" data-action="toggle-faq" data-value="${i}">
+        <div class="faq-item__q">
+          ${item.q}
+          <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+        </div>
+        ${isOpen ? `<div class="faq-item__answer">${item.a}</div>` : ''}
+      </div>`;
+  }).join('');
 
   return `
     <div class="atendimento-page">
