@@ -167,7 +167,43 @@ function buildHomeBR() {
       ${buildAvisosPanel()}
     </div>`;
 }
-function buildHomeUS()     { return '<p style="color:white">Home US (em breve)</p>'; }
+function buildHomeUS() {
+  return `
+    <div class="home-us">
+      ${buildFlagSwitcher()}
+      <div class="stat-cards-row">
+        <div class="stat-card">
+          <div class="stat-card__label">Saldo Conta Investimento</div>
+          <div class="stat-card__value">$48,400.00</div>
+          <div class="stat-card__sub">Portfolio Account</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Total Investido</div>
+          <div class="stat-card__value">$25,900.00</div>
+          <div class="stat-card__sub">IB Balance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Total Investido + Conta</div>
+          <div class="stat-card__value">$74,300.00</div>
+          <div class="stat-card__sub">Consolidated</div>
+        </div>
+      </div>
+      <div class="home-us__body">
+        <div class="chart-area">
+          <div class="chart-area__tabs">
+            <button class="chart-tab active">Ações</button>
+            <button class="chart-tab">Posição</button>
+          </div>
+          <div class="chart-placeholder">Gráfico de Rentabilidade</div>
+        </div>
+        <div class="carteira-panel">
+          <div class="carteira-panel__title">Minha Carteira</div>
+          <div class="donut-placeholder"></div>
+          <p style="font-size:11px;color:var(--text-dim);text-align:center">IB Holdings</p>
+        </div>
+      </div>
+    </div>`;
+}
 function buildCambio() {
   return `
     <div class="cambio-page">

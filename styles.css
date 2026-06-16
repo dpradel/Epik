@@ -376,3 +376,97 @@ input { font-family: inherit; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+/* ── Home US / StatCards ── */
+.home-us { flex: 1; display: flex; flex-direction: column; padding: 0 20px 20px; }
+.stat-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-card__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.stat-card__value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.stat-card__sub { font-size: 11px; color: var(--text-dim); }
+
+.home-us__body {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 16px;
+  flex: 1;
+}
+.chart-area {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+}
+.chart-area__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.chart-tab {
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.chart-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.chart-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  min-height: 180px;
+}
+
+/* Minha Carteira */
+.carteira-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.carteira-panel__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.donut-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 14px solid var(--bg-surface-2);
+  border-top-color: var(--accent);
+  align-self: center;
+}
