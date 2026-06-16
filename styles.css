@@ -201,7 +201,7 @@ input, select, textarea { font-family: inherit; }
   background: transparent;
   display: flex;
   flex-direction: column;
-  animation: fadeIn 0.20s ease;
+  animation: pageEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ── Chat Widget ── */
@@ -1442,9 +1442,77 @@ input, select, textarea { font-family: inherit; }
 .tax-action-card__btn:hover { opacity: 0.88; }
 .tax-action-card__note { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
 
+/* ── Câmbio FAQ Accordion ── */
+.cambio-faq-item { cursor: pointer; }
+.cambio-faq-item.open .cambio-faq-row { color: var(--accent); }
+.cambio-faq-item.open .cambio-faq-row .lucide { transform: rotate(90deg); color: var(--accent); }
+.cambio-faq-row .lucide { transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), color 0.2s; }
+.cambio-faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0 0 0;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  transition: max-height 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease, padding 0.25s ease;
+}
+.cambio-faq-item.open .cambio-faq-answer {
+  max-height: 150px;
+  opacity: 1;
+  padding: 0 0 12px;
+}
+
 /* ── Animations ── */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-.content-area { animation: fadeIn 0.20s ease; }
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stat card staggered entrance ── */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.stat-card {
+  animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stat-cards-row .stat-card:nth-child(1) { animation-delay: 0.04s; }
+.stat-cards-row .stat-card:nth-child(2) { animation-delay: 0.10s; }
+.stat-cards-row .stat-card:nth-child(3) { animation-delay: 0.16s; }
+
+/* ── SVG Chart animations ── */
+.chart-line-path {
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  animation: chartDraw 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+}
+.chart-fill-path {
+  opacity: 0;
+  animation: fadeIn 0.6s ease 1.0s forwards;
+}
+@keyframes chartDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── Aviso cards staggered entrance ── */
+.aviso-card {
+  animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.avisos-panel .aviso-card:nth-child(1) { animation-delay: 0.06s; }
+.avisos-panel .aviso-card:nth-child(2) { animation-delay: 0.12s; }
+.avisos-panel .aviso-card:nth-child(3) { animation-delay: 0.18s; }
+.avisos-panel .aviso-card:nth-child(4) { animation-delay: 0.24s; }
+
+/* ── KYC prompt slide-down ── */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); max-height: 0; }
+  to   { opacity: 1; transform: translateY(0);     max-height: 120px; }
+}
+.kyc-prompt {
+  animation: slideDown 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
 
 /* ── Banner blob ── */
 .banner-blob {
@@ -1648,15 +1716,25 @@ input, select, textarea { font-family: inherit; }
   color: var(--text-muted);
   transition: color 0.15s;
 }
-.faq-item__q .lucide { width: 14px; height: 14px; color: var(--text-dim); flex-shrink: 0; transition: transform 0.2s; }
+.faq-item__q .lucide { width: 14px; height: 14px; color: var(--text-dim); flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s; }
 .faq-item:hover .faq-item__q { color: var(--accent); }
 .faq-item:hover .faq-item__q .lucide { color: var(--accent); }
 .faq-item.open .faq-item__q { color: var(--accent); }
 .faq-item.open .faq-item__q .lucide { transform: rotate(90deg); color: var(--accent); }
 .faq-item__answer {
-  padding: 0 0 14px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding-bottom: 0;
   font-size: 13px;
   color: var(--text-dim);
   line-height: 1.75;
-  animation: fadeIn 0.15s ease;
+  transition: max-height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.28s ease,
+              padding-bottom 0.28s ease;
+}
+.faq-item.open .faq-item__answer {
+  max-height: 300px;
+  opacity: 1;
+  padding-bottom: 14px;
 }

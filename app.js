@@ -5,7 +5,6 @@ const state = {
   screen: 'home',
   kycStep: 1,           // 1-4 form steps, 5 = success
   kycCompleted: false,
-  faqOpen: null,
   user: { name: 'Érico' },
 };
 
@@ -19,6 +18,7 @@ function render() {
   app.innerHTML = buildApp();
   attachEvents();
   if (window.lucide) lucide.createIcons();
+  animateCounters();
 }
 
 function buildApp() {
@@ -64,7 +64,20 @@ function handleAction(e) {
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
     case 'nav':           setState({ screen: value }); break;
     case 'mode':          setState({ mode: value, screen: 'home' }); break;
-    case 'toggle-faq':    setState({ faqOpen: state.faqOpen === +value ? null : +value }); break;
+    case 'toggle-faq': {
+      const clicked = e.currentTarget;
+      const isOpen = clicked.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) clicked.classList.add('open');
+      return;
+    }
+    case 'toggle-cambio-faq': {
+      const clicked = e.currentTarget;
+      const isOpen = clicked.classList.contains('open');
+      document.querySelectorAll('.cambio-faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) clicked.classList.add('open');
+      return;
+    }
   }
 }
 
@@ -643,11 +656,7 @@ function buildHomeUS() {
     <div class="home-us">
       ${buildFlagSwitcher()}
       <div class="home-us__invest-row">
-        <button class="btn-invest" data-action="nav" data-value="trading">
-          <i data-lucide="trending-up" style="width:15px;height:15px"></i>
-          Investir agora
-          <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
-        </button>
+        <button class="btn-invest" data-action="nav" data-value="trading">Investir</button>
       </div>
       <div class="stat-cards-row">
         <div class="stat-card">
@@ -696,8 +705,8 @@ function buildHomeUS() {
               <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">55k</text>
               <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">49k</text>
               <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">44k</text>
-              <path d="${chartFill}" fill="url(#rGrad)"/>
-              <path d="${chartLine}" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="${chartFill}" class="chart-fill-path" fill="url(#rGrad)"/>
+              <path d="${chartLine}" class="chart-line-path" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="500" cy="4" r="4" fill="var(--accent-color, #FBBD0B)"/>
               <circle cx="500" cy="4" r="7" fill="rgba(251,189,11,0.2)"/>
               <text x="56"  y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
@@ -782,21 +791,33 @@ function buildCambio() {
             <i data-lucide="help-circle" style="width:14px;height:14px"></i>
             Dúvidas Frequentes
           </div>
-          <div class="cambio-faq-row">
-            Qual o spread cobrado nas operações de câmbio?
-            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          <div class="cambio-faq-item" data-action="toggle-cambio-faq" data-value="0">
+            <div class="cambio-faq-row">
+              Qual o spread cobrado nas operações de câmbio?
+              <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+            </div>
+            <div class="cambio-faq-answer">O spread EPIK é de 0,8% sobre a taxa de câmbio comercial do dia. Para operações acima de US$ 5.000 por mês, entre em contato com nosso time para negociar condições especiais.</div>
           </div>
-          <div class="cambio-faq-row">
-            Posso fazer remessas para contas de terceiros?
-            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          <div class="cambio-faq-item" data-action="toggle-cambio-faq" data-value="1">
+            <div class="cambio-faq-row">
+              Posso fazer remessas para contas de terceiros?
+              <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+            </div>
+            <div class="cambio-faq-answer">Não. Por regulamentação do Banco Central, as remessas via EPIK só podem ser realizadas entre contas de mesma titularidade — sua conta no Brasil e sua conta Interactive Brokers nos EUA.</div>
           </div>
-          <div class="cambio-faq-row">
-            Como é calculado o IOF nas remessas?
-            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          <div class="cambio-faq-item" data-action="toggle-cambio-faq" data-value="2">
+            <div class="cambio-faq-row">
+              Como é calculado o IOF nas remessas?
+              <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+            </div>
+            <div class="cambio-faq-answer">O IOF aplicado é de 0,38% sobre o valor total da remessa em reais, conforme tabela vigente do Decreto nº 6.306/2007 para operações de câmbio de transferências ao exterior.</div>
           </div>
-          <div class="cambio-faq-row">
-            Quando o valor chega na minha conta americana?
-            <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+          <div class="cambio-faq-item" data-action="toggle-cambio-faq" data-value="3">
+            <div class="cambio-faq-row">
+              Quando o valor chega na minha conta americana?
+              <i data-lucide="chevron-right" style="width:13px;height:13px"></i>
+            </div>
+            <div class="cambio-faq-answer">Após a confirmação do PIX/TED, o processamento leva até D+2 dias úteis. O valor aparecerá em dólares diretamente na sua conta Interactive Brokers, já convertido pela taxa acordada.</div>
           </div>
         </div>
       </div>
@@ -906,17 +927,14 @@ const FAQ_ITEMS = [
 ];
 
 function buildAtendimento() {
-  const faqRows = FAQ_ITEMS.map((item, i) => {
-    const isOpen = state.faqOpen === i;
-    return `
-      <div class="faq-item${isOpen ? ' open' : ''}" data-action="toggle-faq" data-value="${i}">
-        <div class="faq-item__q">
-          ${item.q}
-          <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
-        </div>
-        ${isOpen ? `<div class="faq-item__answer">${item.a}</div>` : ''}
-      </div>`;
-  }).join('');
+  const faqRows = FAQ_ITEMS.map((item, i) => `
+    <div class="faq-item" data-action="toggle-faq" data-value="${i}">
+      <div class="faq-item__q">
+        ${item.q}
+        <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+      </div>
+      <div class="faq-item__answer">${item.a}</div>
+    </div>`).join('');
 
   return `
     <div class="atendimento-page">
@@ -974,6 +992,36 @@ function buildTaxCenter() {
         </div>
       </div>
     </div>`;
+}
+
+function animateCounters() {
+  document.querySelectorAll('.stat-card__value, .chart-stat__value').forEach(el => {
+    const text = el.textContent.trim();
+    const match = text.match(/^([$R]?)([0-9,]+)(\.[0-9]+)?(%?)$/);
+    if (!match) return;
+    const prefix = match[1] || '';
+    const intPart = match[2].replace(/,/g, '');
+    const decPart = match[3] || '';
+    const suffix = match[4] || '';
+    const target = parseFloat(intPart + decPart);
+    if (isNaN(target) || target === 0) return;
+    const decimals = decPart ? decPart.length - 1 : 0;
+    const duration = 900;
+    let startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      const p = Math.min((ts - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val = (target * ease).toFixed(decimals);
+      const formatted = parseFloat(val).toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+      el.textContent = prefix + formatted + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
 }
 
 render();
