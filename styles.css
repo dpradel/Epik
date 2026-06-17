@@ -275,9 +275,9 @@ input, select, textarea { font-family: inherit; }
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: rgba(14,14,18,0.45);
-  backdrop-filter: blur(28px) saturate(1.6);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  background: rgba(14,14,18,0.50);
+  backdrop-filter: blur(48px) saturate(1.8);
+  -webkit-backdrop-filter: blur(48px) saturate(1.8);
   border: 1px solid rgba(255,255,255,0.10);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
@@ -323,7 +323,7 @@ input, select, textarea { font-family: inherit; }
   transition: background 0.15s;
   cursor: pointer;
 }
-.notif-item:hover { background: var(--bg-surface-3); }
+.notif-item:hover { background: rgba(255,255,255,0.07); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .notif-item--unread { background: rgba(255,255,255,0.02); }
 .notif-item__icon {
   width: 34px; height: 34px;
@@ -337,7 +337,7 @@ input, select, textarea { font-family: inherit; }
 .notif-item__icon--sky     { background: var(--sky-dim);     color: var(--sky);     }
 .notif-item__body { flex: 1; min-width: 0; }
 .notif-item__title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-.notif-item__desc  { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+.notif-item__desc  { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 .notif-item__time  { font-size: 10px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
 .notif-item__dot {
   position: absolute;
@@ -384,7 +384,7 @@ input, select, textarea { font-family: inherit; }
   text-align: left;
   transition: background 0.15s, color 0.15s;
 }
-.user-menu__item:hover { background: var(--bg-surface-3); color: var(--text-primary); }
+.user-menu__item:hover { background: rgba(255,255,255,0.07); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--text-primary); }
 .user-menu__item--danger { color: var(--rose); }
 .user-menu__item--danger:hover { background: rgba(251,113,133,0.08); color: var(--rose); }
 
