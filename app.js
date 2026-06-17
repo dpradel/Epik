@@ -64,7 +64,7 @@ function handleAction(e) {
   const action = e.currentTarget.dataset.action;
   const value  = e.currentTarget.dataset.value;
   switch (action) {
-    case 'login':         setState({ authState: 'pre-cadastro' }); break;
+    case 'login':         setState({ authState: 'authenticated', screen: 'home' }); break;
     case 'signup':        setState({ authState: 'signup' }); break;
     case 'back-to-login': setState({ authState: 'login' }); break;
     case 'submit-signup': setState({ authState: 'kyc', kycStep: 1 }); break;
@@ -89,6 +89,12 @@ function handleAction(e) {
       const isOpen = clicked.classList.contains('open');
       document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
       if (!isOpen) clicked.classList.add('open');
+      return;
+    }
+    case 'select-kyc-option': {
+      const group = e.currentTarget.closest('.kyc-options');
+      group?.querySelectorAll('.kyc-option-card').forEach(c => c.classList.remove('selected'));
+      e.currentTarget.classList.add('selected');
       return;
     }
     case 'toggle-cambio-faq': {
@@ -507,11 +513,11 @@ function buildKycStepContent() {
         <div class="kyc-question">
           <div class="kyc-question__label">Qual é seu objetivo principal de investimento?</div>
           <div class="kyc-options">
-            <button class="kyc-option-card">
+            <button class="kyc-option-card" data-action="select-kyc-option">
               <i data-lucide="shield" style="width:20px;height:20px"></i>
               Preservar Capital
             </button>
-            <button class="kyc-option-card">
+            <button class="kyc-option-card" data-action="select-kyc-option">
               <i data-lucide="percent" style="width:20px;height:20px"></i>
               Renda Regular
             </button>
@@ -519,7 +525,7 @@ function buildKycStepContent() {
               <i data-lucide="trending-up" style="width:20px;height:20px"></i>
               Crescimento
             </button>
-            <button class="kyc-option-card">
+            <button class="kyc-option-card" data-action="select-kyc-option">
               <i data-lucide="zap" style="width:20px;height:20px"></i>
               Alta Rentabilidade
             </button>
@@ -528,10 +534,10 @@ function buildKycStepContent() {
         <div class="kyc-question">
           <div class="kyc-question__label">Qual é sua tolerância ao risco?</div>
           <div class="kyc-options">
-            <button class="kyc-option-card">Conservador</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Conservador</button>
             <button class="kyc-option-card selected">Moderado</button>
-            <button class="kyc-option-card">Arrojado</button>
-            <button class="kyc-option-card">Agressivo</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Arrojado</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Agressivo</button>
           </div>
         </div>
       </div>`;
