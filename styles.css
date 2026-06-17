@@ -1107,8 +1107,7 @@ input, select, textarea { font-family: inherit; }
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(245,197,24,0.28);
   transition: transform 0.15s, box-shadow 0.15s;
-  flex-shrink: 0;
-  width: auto;
+  align-self: flex-start;
 }
 .banner-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(245,197,24,0.38); }
 .banner-deco {
@@ -1617,7 +1616,7 @@ input, select, textarea { font-family: inherit; }
   padding: 8px 20px;
   border-radius: 9999px;
   transition: opacity 0.15s;
-  width: 100%;
+  align-self: center;
   box-shadow: 0 4px 12px rgba(251,189,11,0.2);
 }
 .tax-action-card__btn:hover { opacity: 0.88; }
