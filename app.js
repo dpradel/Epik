@@ -982,25 +982,46 @@ function buildAtendimento() {
 function buildTaxCenter() {
   return `
     <div class="tax-page">
-      <div class="tax-import-area">
-        <i data-lucide="upload-cloud" style="width:22px;height:22px"></i>
-        <div class="tax-import-area__label">Importar Operações</div>
+      <div class="tax-upload-zone">
+        <div class="tax-upload-zone__icon">
+          <i data-lucide="upload-cloud" style="width:28px;height:28px"></i>
+        </div>
+        <div class="tax-upload-zone__text">
+          <div class="tax-upload-zone__title">Importar operações</div>
+          <div class="tax-upload-zone__sub">Arraste um arquivo ou clique para selecionar — .ofx, .xlsx ou .csv</div>
+        </div>
+        <button class="tax-upload-zone__btn">Selecionar arquivo</button>
       </div>
       <div class="tax-actions">
-        <div class="tax-action-card">
-          <i data-lucide="book-open" style="width:24px;height:24px"></i>
-          <div class="tax-action-card__label">Guia IRPF</div>
-          <button class="tax-action-card__btn">Acessar</button>
+        <div class="tax-action-card tax-action-card--amber">
+          <div class="tax-action-card__icon-wrap">
+            <i data-lucide="book-open" style="width:18px;height:18px"></i>
+          </div>
+          <div class="tax-action-card__info">
+            <div class="tax-action-card__title">Guia IRPF</div>
+            <div class="tax-action-card__desc">Como declarar seus investimentos no exterior passo a passo</div>
+          </div>
+          <button class="tax-action-card__btn">Ver guia</button>
         </div>
-        <div class="tax-action-card">
-          <i data-lucide="plus-circle" style="width:24px;height:24px"></i>
-          <div class="tax-action-card__label">Cadastrar Operações</div>
-          <button class="tax-action-card__btn">Cadastrar</button>
+        <div class="tax-action-card tax-action-card--violet">
+          <div class="tax-action-card__icon-wrap">
+            <i data-lucide="pencil" style="width:18px;height:18px"></i>
+          </div>
+          <div class="tax-action-card__info">
+            <div class="tax-action-card__title">Lançamento manual</div>
+            <div class="tax-action-card__desc">Registre operações que não constam no arquivo importado</div>
+          </div>
+          <button class="tax-action-card__btn">Registrar</button>
         </div>
-        <div class="tax-action-card">
-          <i data-lucide="download" style="width:24px;height:24px"></i>
-          <div class="tax-action-card__label">Extrato das Operações</div>
-          <button class="tax-action-card__btn">Gerar CSV</button>
+        <div class="tax-action-card tax-action-card--sky">
+          <div class="tax-action-card__icon-wrap">
+            <i data-lucide="file-down" style="width:18px;height:18px"></i>
+          </div>
+          <div class="tax-action-card__info">
+            <div class="tax-action-card__title">Exportar extrato</div>
+            <div class="tax-action-card__desc">Baixe o histórico completo das suas operações em CSV</div>
+          </div>
+          <button class="tax-action-card__btn">Exportar</button>
         </div>
       </div>
     </div>`;
