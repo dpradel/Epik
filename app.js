@@ -142,6 +142,15 @@ function handleAction(e) {
       const fillPath = d.line + ' L500,138 L44,138 Z';
       document.getElementById('chart-line')?.setAttribute('d', d.line);
       document.getElementById('chart-fill')?.setAttribute('d', fillPath);
+      // Move endpoint dot to the last coordinate of the new path
+      const endMatch = d.line.match(/(\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\s*$/);
+      if (endMatch) {
+        const ex = endMatch[1], ey = endMatch[2];
+        document.getElementById('chart-dot')?.setAttribute('cx', ex);
+        document.getElementById('chart-dot')?.setAttribute('cy', ey);
+        document.getElementById('chart-dot-halo')?.setAttribute('cx', ex);
+        document.getElementById('chart-dot-halo')?.setAttribute('cy', ey);
+      }
       const xLabels = document.querySelectorAll('.chart-x-label');
       d.labels.forEach((lbl, i) => { if (xLabels[i]) xLabels[i].textContent = lbl; });
       const statStart = document.getElementById('chart-stat-start');
@@ -855,22 +864,22 @@ function buildHomeUS() {
             <svg class="rentabilidade-svg" viewBox="0 0 544 142" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="rGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stop-color="rgba(251,189,11,0.22)"/>
+                  <stop offset="0%"   stop-color="rgba(251,189,11,0.32)"/>
                   <stop offset="100%" stop-color="rgba(251,189,11,0)"/>
                 </linearGradient>
               </defs>
-              <line x1="44" y1="10"  x2="500" y2="10"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-              <line x1="44" y1="48"  x2="500" y2="48"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-              <line x1="44" y1="86"  x2="500" y2="86"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-              <line x1="44" y1="124" x2="500" y2="124" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="44" y1="10"  x2="500" y2="10"  stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+              <line x1="44" y1="48"  x2="500" y2="48"  stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+              <line x1="44" y1="86"  x2="500" y2="86"  stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+              <line x1="44" y1="124" x2="500" y2="124" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
               <text x="2"  y="13"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">62k</text>
               <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">55k</text>
               <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">49k</text>
               <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">44k</text>
               <path id="chart-fill" d="${chartFill}" class="chart-fill-path" fill="url(#rGrad)"/>
               <path id="chart-line" d="${chartLine}" class="chart-line-path" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="500" cy="4" r="4" fill="var(--accent-color, #FBBD0B)"/>
-              <circle cx="500" cy="4" r="7" fill="rgba(251,189,11,0.2)"/>
+              <circle id="chart-dot-halo" cx="500" cy="4" r="7" fill="rgba(251,189,11,0.22)"/>
+              <circle id="chart-dot" cx="500" cy="4" r="3.5" fill="#FBBD0B"/>
               <text x="56"  y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
               <text x="110" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Fev</text>
               <text x="164" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mar</text>
