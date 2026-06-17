@@ -1187,7 +1187,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 /* ── Settings / Segurança ── */
 .settings-page {
   padding: 28px 32px 40px;
-  max-width: 720px;
 }
 .settings-page__header {
   display: flex;
@@ -1213,6 +1212,12 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   color: var(--text-primary);
 }
 .settings-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.settings-col {
   display: flex;
   flex-direction: column;
   gap: 24px;
