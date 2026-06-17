@@ -87,7 +87,7 @@ body::before {
 
 #app { position: relative; z-index: 1; height: 100%; }
 
-button { cursor: pointer; font-family: inherit; border: none; background: none; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; border-radius: 9999px; }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 input, select, textarea { font-family: inherit; }
@@ -144,7 +144,7 @@ input, select, textarea { font-family: inherit; }
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: none;
   background: none;
   cursor: pointer;
@@ -200,7 +200,7 @@ input, select, textarea { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: 1px solid transparent;
   background: none;
   cursor: pointer;
@@ -220,7 +220,7 @@ input, select, textarea { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   color: var(--text-muted);
@@ -240,7 +240,7 @@ input, select, textarea { font-family: inherit; }
   font-size: 12px;
   font-weight: 600;
   padding: 7px 14px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.18s;
 }
@@ -302,7 +302,7 @@ input, select, textarea { font-family: inherit; }
   letter-spacing: 0.07em;
   text-transform: uppercase;
   padding: 13px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   box-shadow: 0 4px 20px rgba(245,197,24,0.25);
   transition: opacity 0.15s, box-shadow 0.15s, transform 0.15s;
 }
@@ -320,7 +320,7 @@ input, select, textarea { font-family: inherit; }
   border: 1px solid var(--glass-border);
   color: var(--text-dim);
   padding: 10px 20px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -1048,7 +1048,7 @@ input, select, textarea { font-family: inherit; }
   position: relative;
   background:
     linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.70) 50%, rgba(10,10,11,0.20) 100%),
-    url('assets/imagem de fundo.png') center 30% / cover no-repeat;
+    url('assets/imagem de fundo.png') center 70% / cover no-repeat;
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: var(--radius-xl);
   padding: 44px 48px;
@@ -1099,7 +1099,7 @@ input, select, textarea { font-family: inherit; }
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 12px 24px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(245,197,24,0.28);
@@ -1610,7 +1610,7 @@ input, select, textarea { font-family: inherit; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 8px 20px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   transition: opacity 0.15s;
   width: 100%;
   box-shadow: 0 4px 12px rgba(251,189,11,0.2);
@@ -1732,7 +1732,7 @@ input, select, textarea { font-family: inherit; }
   font-weight: 600;
   letter-spacing: 0.04em;
   padding: 5px 12px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: 1px solid rgba(245,197,24,0.30);
   white-space: nowrap;
   transition: background 0.15s, border-color 0.15s;
