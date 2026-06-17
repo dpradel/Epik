@@ -991,7 +991,6 @@ function buildTaxCenter() {
           <i data-lucide="book-open" style="width:24px;height:24px"></i>
           <div class="tax-action-card__label">Guia IRPF</div>
           <button class="tax-action-card__btn">Acessar</button>
-          <div class="tax-action-card__note">Conteúdo via FAQ / Atendimento</div>
         </div>
         <div class="tax-action-card">
           <i data-lucide="plus-circle" style="width:24px;height:24px"></i>
