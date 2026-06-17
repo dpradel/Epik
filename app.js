@@ -39,6 +39,7 @@ function buildScreen() {
     case 'tax-center':     return buildTaxCenter();
     case 'configuracoes':  return buildConfiguracoes();
     case 'seguranca':      return buildSeguranca();
+    case 'editar-perfil':  return buildEditarPerfil();
     default:               return buildHomeBR();
   }
 }
@@ -125,7 +126,7 @@ function handleAction(e) {
     }
     case 'edit-profile': {
       document.querySelector('.user-menu-dropdown')?.classList.remove('open');
-      setState({ authState: 'kyc', kycStep: 1 });
+      setState({ screen: 'editar-perfil' });
       return;
     }
     case 'logout': {
@@ -1160,6 +1161,154 @@ function animateCounters() {
     }
     requestAnimationFrame(step);
   });
+}
+
+// ── Editar Perfil ──
+function buildEditarPerfil() {
+  const u = state.user;
+  return `
+    <div class="settings-page">
+      <div class="settings-page__header">
+        <button class="settings-back-btn" data-action="set-screen" data-value="home">
+          <i data-lucide="arrow-left" style="width:15px;height:15px"></i>
+          Voltar
+        </button>
+        <h2 class="settings-page__title">Editar perfil</h2>
+      </div>
+
+      <div class="settings-sections">
+        <div class="settings-col">
+          <div class="settings-section">
+            <div class="settings-section__title">Dados pessoais</div>
+            <div class="settings-card">
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Nome</div>
+                </div>
+                <input class="settings-input" type="text" value="${u.name}">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Sobrenome</div>
+                </div>
+                <input class="settings-input" type="text" value="${u.lastName}">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Data de nascimento</div>
+                </div>
+                <input class="settings-input" type="text" placeholder="DD/MM/AAAA" value="14/03/1990">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">CPF</div>
+                </div>
+                <input class="settings-input" type="text" value="382.109.740-55" disabled>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section__title">Contato</div>
+            <div class="settings-card">
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">E-mail</div>
+                </div>
+                <input class="settings-input" type="email" value="${u.email}">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Telefone</div>
+                </div>
+                <input class="settings-input" type="text" value="+55 (11) 99204-7731">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-col">
+          <div class="settings-section">
+            <div class="settings-section__title">Endereço</div>
+            <div class="settings-card">
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">CEP</div>
+                </div>
+                <input class="settings-input" type="text" value="01310-100">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Logradouro</div>
+                </div>
+                <input class="settings-input" type="text" value="Av. Paulista">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Número</div>
+                </div>
+                <input class="settings-input" type="text" value="1374">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Complemento</div>
+                </div>
+                <input class="settings-input" type="text" placeholder="Apto, sala, bloco…">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Cidade</div>
+                </div>
+                <input class="settings-input" type="text" value="São Paulo">
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Estado</div>
+                </div>
+                <select class="settings-select settings-select--full">
+                  <option>SP — São Paulo</option>
+                  <option>RJ — Rio de Janeiro</option>
+                  <option>MG — Minas Gerais</option>
+                  <option>RS — Rio Grande do Sul</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section__title">Perfil de investidor</div>
+            <div class="settings-card">
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Perfil</div>
+                  <div class="settings-row__desc">Definido na abertura de conta</div>
+                </div>
+                <select class="settings-select">
+                  <option>Moderado</option>
+                  <option>Conservador</option>
+                  <option>Arrojado</option>
+                </select>
+              </div>
+              <div class="settings-row settings-row--field">
+                <div class="settings-row__info">
+                  <div class="settings-row__label">Renda mensal</div>
+                </div>
+                <select class="settings-select">
+                  <option>R$ 5.001 – R$ 10.000</option>
+                  <option>Até R$ 5.000</option>
+                  <option>R$ 10.001 – R$ 20.000</option>
+                  <option>Acima de R$ 20.000</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <button class="settings-save-btn">Salvar alterações</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
 // ── Configurações ──
