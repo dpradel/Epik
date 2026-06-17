@@ -3,10 +3,13 @@ const state = {
   authState: 'authenticated',   // 'login' | 'signup' | 'pre-cadastro' | 'kyc' | 'authenticated'
   mode: 'BR',           // 'BR' | 'US'
   screen: 'home',
-  kycStep: 1,           // 1-4 form steps, 5 = success
+  kycStep: 1,           // 1-6 form steps, 7 = success
   kycCompleted: false,
   user: { name: 'Érico', lastName: 'Monteiro', email: 'erico.monteiro@email.com' },
 };
+
+const kycSuit = { answers: [], done: false, profile: null };
+let kycNavDir = 1; // 1 = forward, -1 = backward
 
 function setState(patch) {
   Object.assign(state, patch);
@@ -19,6 +22,7 @@ function render() {
   attachEvents();
   if (window.lucide) lucide.createIcons();
   animateCounters();
+  if (state.authState === 'kyc' && state.kycStep === 5) initSuitChat();
 }
 
 function buildApp() {
@@ -117,11 +121,69 @@ function handleAction(e) {
     case 'login':         setState({ authState: 'authenticated', screen: 'home' }); break;
     case 'signup':        setState({ authState: 'signup' }); break;
     case 'back-to-login': setState({ authState: 'login' }); break;
-    case 'submit-signup': setState({ authState: 'kyc', kycStep: 1 }); break;
-    case 'start-kyc':     setState({ authState: 'kyc', kycStep: 1 }); break;
-    case 'kyc-next':      setState({ kycStep: Math.min(state.kycStep + 1, 5) }); break;
-    case 'kyc-prev':      setState({ kycStep: Math.max(state.kycStep - 1, 1) }); break;
+    case 'submit-signup':
+      kycSuit.answers = []; kycSuit.done = false; kycSuit.profile = null;
+      setState({ authState: 'kyc', kycStep: 1 }); break;
+    case 'start-kyc':
+      kycSuit.answers = []; kycSuit.done = false; kycSuit.profile = null;
+      setState({ authState: 'kyc', kycStep: 1 }); break;
+    case 'kyc-next':      kycNavDir = 1;  setState({ kycStep: Math.min(state.kycStep + 1, 7) }); break;
+    case 'kyc-prev':      kycNavDir = -1; setState({ kycStep: Math.max(state.kycStep - 1, 1) }); break;
     case 'kyc-submit':    setState({ authState: 'authenticated', screen: 'home', mode: 'BR', kycCompleted: true }); break;
+    case 'kyc-goto': {
+      kycNavDir = parseInt(value) >= state.kycStep ? 1 : -1;
+      setState({ kycStep: parseInt(value) });
+      break;
+    }
+    case 'suit-answer': {
+      const qIdx = parseInt(e.currentTarget.dataset.qidx);
+      const oIdx  = parseInt(e.currentTarget.dataset.oidx);
+      const q = SUIT_QUESTIONS[qIdx];
+      if (q.multi) {
+        e.currentTarget.classList.toggle('selected');
+        const wrap = e.currentTarget.closest('.suit-answers');
+        const hasAny = wrap.querySelectorAll('.suit-answer-btn.selected').length > 0;
+        const confirmBtn = document.querySelector(`.suit-confirm-btn[data-qidx="${qIdx}"]`);
+        if (confirmBtn) confirmBtn.disabled = !hasAny;
+        return;
+      }
+      const container = document.getElementById('suit-chat');
+      const wrap = e.currentTarget.closest('.suit-answers');
+      wrap.querySelectorAll('.suit-answer-btn').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
+      e.currentTarget.classList.add('selected');
+      const ansText = q.opts[oIdx];
+      kycSuit.answers.push({ q: q.q, a: ansText });
+      setTimeout(() => {
+        suitAppendUserMsg(container, ansText);
+        suitAdvanceChat(container);
+      }, 220);
+      return;
+    }
+    case 'suit-confirm': {
+      const qIdx = parseInt(e.currentTarget.dataset.qidx);
+      const q = SUIT_QUESTIONS[qIdx];
+      const container = document.getElementById('suit-chat');
+      const wrap = document.querySelector(`.suit-answers[data-qidx="${qIdx}"]`);
+      const selected = [...wrap.querySelectorAll('.suit-answer-btn.selected')];
+      const text = selected.map(b => b.textContent.trim()).join(', ');
+      wrap.querySelectorAll('.suit-answer-btn').forEach(b => b.disabled = true);
+      e.currentTarget.disabled = true;
+      kycSuit.answers.push({ q: q.q, a: text });
+      setTimeout(() => {
+        suitAppendUserMsg(container, text);
+        suitAdvanceChat(container);
+      }, 220);
+      return;
+    }
+    case 'suit-retry': {
+      kycSuit.answers = [];
+      kycSuit.done = false;
+      kycSuit.profile = null;
+      initSuitChat();
+      const nextBtn = document.getElementById('kyc-next-btn');
+      if (nextBtn) nextBtn.setAttribute('disabled', '');
+      return;
+    }
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
     case 'nav': {
       const navItem = NAV_ITEMS.find(n => n.id === value);
@@ -504,155 +566,360 @@ function buildSignup() {
 }
 
 // ── KYC Form ──
-const KYC_STEPS = [
-  { label: 'Dados',    icon: 'user'               },
-  { label: 'Endereço', icon: 'map-pin'            },
-  { label: 'Perfil',   icon: 'sliders-horizontal' },
-  { label: 'Docs',     icon: 'file-check'         },
+const SUIT_QUESTIONS = [
+  { q: 'Olá! Vou fazer algumas perguntas rápidas para entender seu perfil de investidor. Qual é seu objetivo de investimento?', opts: ['Preservar patrimônio', 'Render acima da inflação', 'Buscar retornos maiores'], multi: false },
+  { q: 'Em quantos anos você planeja se aposentar?', opts: ['0–2 anos', '2–4 anos', '5–9 anos', 'Mais de 10 anos'], multi: false },
+  { q: 'Por quanto tempo planeja manter seu dinheiro investido?', opts: ['Até 1 semana', 'Até 2 meses', 'Até 6 meses', 'Até 1 ano', 'Mais de 1 ano'], multi: false },
+  { q: 'Quais produtos você conhece os riscos? Selecione todos que se aplicam.', opts: ['Poupança / Títulos Públicos / Fundos DI', 'CDB / LCI / LCA / Renda Fixa', 'Fundos Multimercados / Cambiais', 'Ações / ETF / BDR / FII', 'Derivativos / COEs', 'Fundos de Participações'], multi: true },
+  { q: 'Há quantos anos você investe em ações?', opts: ['0 anos', '1–5 anos', '5–10 anos', 'Mais de 10 anos'], multi: false },
+  { q: 'Quantos trades de ações você realiza por ano?', opts: ['0 trades', '1–10', '11–25', '26–50', '51–100', 'Mais de 100'], multi: false },
+  { q: 'Qual é seu nível de conhecimento em ações?', opts: ['Nenhum', 'Limitado', 'Bom', 'Extenso'], multi: false },
+  { q: 'Qual das opções melhor descreve você?', opts: ['Superior incompleto, sem experiência financeira', 'Superior completo, sem experiência financeira', 'Superior incompleto, com experiência financeira', 'Superior completo, com experiência financeira'], multi: false },
+  { q: 'Prefiro investimentos com menores flutuações e aceito retornos mais baixos.', opts: ['Concordo', 'Neutro', 'Discordo parcialmente', 'Discordo'], multi: false },
+  { q: 'Em períodos de crise, costumo vender ativos de risco e migrar para ativos mais seguros.', opts: ['Concordo', 'Neutro', 'Discordo parcialmente', 'Discordo'], multi: false },
+  { q: 'Qual plano hipotético seria mais aceitável para você?', opts: ['A — retorno médio 4,13% / pior ano -2,85%', 'B — retorno médio 6,44% / pior ano -3,89%', 'C — retorno médio 7,99% / pior ano -5,64%', 'D — retorno médio 9,56% / pior ano -7,00%', 'E — retorno médio 11,06% / pior ano -8,07%'], multi: false },
 ];
 
-const KYC_TITLES    = ['Dados Pessoais', 'Endereço', 'Perfil de Investidor', 'Documentos'];
+const KYC_STEPS = [
+  { label: 'Identificação', icon: 'user'               },
+  { label: 'Documentos',    icon: 'file-check'         },
+  { label: 'Endereço',      icon: 'map-pin'            },
+  { label: 'Ocupação',      icon: 'briefcase'          },
+  { label: 'Perfil',        icon: 'sliders-horizontal' },
+  { label: 'Revisão',       icon: 'check-circle-2'     },
+];
+
+const KYC_TITLES = [
+  'Identificação',
+  'Documento de Identidade',
+  'Endereço e Contato',
+  'Ocupação e Finanças',
+  'Perfil de Investidor',
+  'Revisão do Cadastro',
+];
+
 const KYC_SUBTITLES = [
-  'Informações básicas para abertura de conta',
-  'Endereço residencial atual',
-  'Suitability — personalizamos sua experiência',
-  'Validação de identidade e residência',
+  'Dados pessoais para abertura de conta',
+  'Documento com foto e comprovante de endereço',
+  'Endereço residencial e telefone de contato',
+  'Situação profissional e patrimônio',
+  'Algumas perguntas para definir seu perfil',
+  'Confirme seus dados antes de enviar',
 ];
 
 function buildKycStepContent() {
   switch (state.kycStep) {
+
     case 1: return `
-      <div class="form-grid-2">
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" placeholder="Seu nome completo" />
+      <div class="form-fields">
+        <div class="form-section-label">Dados pessoais</div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Primeiro nome *</label>
+            <input type="text" placeholder="Ex: João" />
+          </div>
+          <div class="form-group">
+            <label>Sobrenome(s) *</label>
+            <input type="text" placeholder="Ex: Silva Santos" />
+          </div>
+          <div class="form-group">
+            <label>CPF *</label>
+            <input type="text" placeholder="000.000.000-00" />
+          </div>
+          <div class="form-group">
+            <label>Data de nascimento *</label>
+            <input type="date" />
+          </div>
         </div>
         <div class="form-group">
-          <label>CPF</label>
-          <input type="text" placeholder="000.000.000-00" />
+          <label>E-mail *</label>
+          <input type="email" placeholder="seu@email.com" />
         </div>
         <div class="form-group">
-          <label>Data de Nascimento</label>
-          <input type="text" placeholder="DD/MM/AAAA" />
+          <label>Gênero *</label>
+          <div class="kyc-options kyc-options--3 kyc-options--compact">
+            <button class="kyc-option-card" data-action="select-kyc-option">Masculino</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Feminino</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Prefiro não informar</button>
+          </div>
         </div>
         <div class="form-group">
-          <label>Telefone</label>
-          <input type="tel" placeholder="+55 (11) 90000-0000" />
+          <label>Nacionalidade *</label>
+          <div class="kyc-options kyc-options--2 kyc-options--compact">
+            <button class="kyc-option-card" data-action="select-kyc-option">Sou cidadão brasileiro</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Tenho CPF, mas sou estrangeiro</button>
+          </div>
+        </div>
+        <div class="form-section-label">Filiação e estado civil</div>
+        <div class="form-group">
+          <label>Nome completo da mãe *</label>
+          <input type="text" placeholder="Sem abreviações, máx. 60 caracteres" maxlength="60" />
         </div>
         <div class="form-group">
-          <label>Nacionalidade</label>
-          <select>
-            <option>Brasileiro(a)</option>
-            <option>Outro</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Estado Civil</label>
-          <select>
-            <option>Solteiro(a)</option>
-            <option>Casado(a)</option>
-            <option>Divorciado(a)</option>
-          </select>
+          <label>Estado civil *</label>
+          <div class="kyc-options kyc-options--compact" style="grid-template-columns:repeat(5,1fr)">
+            <button class="kyc-option-card" data-action="select-kyc-option">Solteiro(a)</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Casado(a)</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Separado(a)</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Divorciado(a)</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Viúvo(a)</button>
+          </div>
         </div>
       </div>`;
 
     case 2: return `
       <div class="form-fields">
+        <div class="form-group">
+          <label>Tipo de documento *</label>
+          <div class="kyc-options kyc-options--3 kyc-options--compact">
+            <button class="kyc-option-card selected" data-action="select-kyc-option">RG</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">CNH</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">CIN</button>
+          </div>
+        </div>
         <div class="form-grid-2">
           <div class="form-group">
-            <label>CEP</label>
-            <input type="text" placeholder="00000-000" />
+            <label>Número do documento *</label>
+            <input type="text" placeholder="Número do RG, CNH ou CIN" />
           </div>
           <div class="form-group">
-            <label>Estado</label>
+            <label>Data de emissão *</label>
+            <input type="date" />
+          </div>
+          <div class="form-group">
+            <label>Órgão emissor *</label>
             <select>
-              <option>SP</option><option>RJ</option><option>MG</option>
-              <option>RS</option><option>PR</option><option>SC</option>
+              <option value="">Selecione...</option>
+              <option>SSP</option><option>DETRAN</option><option>DPF</option>
+              <option>PC</option><option>RF</option><option>OAB</option>
+              <option>CRM</option><option>CREA</option><option>BACEN</option>
+              <option>MJU</option><option>OUTROS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>País de emissão *</label>
+            <select>
+              <option>Brasil</option>
+              <option>Outro...</option>
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>Rua / Avenida</label>
-          <input type="text" placeholder="Av. Paulista" />
-        </div>
-        <div class="form-grid-3">
-          <div class="form-group">
-            <label>Número</label>
-            <input type="text" placeholder="1000" />
-          </div>
-          <div class="form-group">
-            <label>Complemento</label>
-            <input type="text" placeholder="Apto 42" />
-          </div>
-          <div class="form-group">
-            <label>Bairro</label>
-            <input type="text" placeholder="Bela Vista" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Cidade</label>
-          <input type="text" placeholder="São Paulo" />
-        </div>
-      </div>`;
-
-    case 3: return `
-      <div>
-        <div class="kyc-question">
-          <div class="kyc-question__label">Qual é seu objetivo principal de investimento?</div>
-          <div class="kyc-options">
-            <button class="kyc-option-card" data-action="select-kyc-option">
-              <i data-lucide="shield" style="width:20px;height:20px"></i>
-              Preservar Capital
-            </button>
-            <button class="kyc-option-card" data-action="select-kyc-option">
-              <i data-lucide="percent" style="width:20px;height:20px"></i>
-              Renda Regular
-            </button>
-            <button class="kyc-option-card selected" data-action="select-kyc-option">
-              <i data-lucide="trending-up" style="width:20px;height:20px"></i>
-              Crescimento
-            </button>
-            <button class="kyc-option-card" data-action="select-kyc-option">
-              <i data-lucide="zap" style="width:20px;height:20px"></i>
-              Alta Rentabilidade
-            </button>
-          </div>
-        </div>
-        <div class="kyc-question">
-          <div class="kyc-question__label">Qual é sua tolerância ao risco?</div>
-          <div class="kyc-options">
-            <button class="kyc-option-card" data-action="select-kyc-option">Conservador</button>
-            <button class="kyc-option-card selected" data-action="select-kyc-option">Moderado</button>
-            <button class="kyc-option-card" data-action="select-kyc-option">Arrojado</button>
-            <button class="kyc-option-card" data-action="select-kyc-option">Agressivo</button>
-          </div>
-        </div>
-      </div>`;
-
-    case 4: return `
-      <div>
-        <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.6">
-          Envie os documentos abaixo para validação. Aceitamos JPG, PNG e PDF (até 10MB por arquivo).
-        </p>
-        <div class="upload-cards">
+        <div class="form-section-label">Documentos para envio</div>
+        <div class="upload-cards upload-cards--2">
           <div class="upload-card">
             <i data-lucide="credit-card" style="width:28px;height:28px"></i>
-            <div class="upload-card__name">RG ou CNH</div>
+            <div class="upload-card__name">Documento com foto</div>
+            <div class="upload-card__hint">RG, CNH ou CIN — PDF/JPG/PNG, máx. 10MB</div>
             <span class="upload-card__status">Aguardando</span>
             <span class="upload-card__cta">Enviar</span>
           </div>
           <div class="upload-card">
             <i data-lucide="file-text" style="width:28px;height:28px"></i>
-            <div class="upload-card__name">Comprov. Residência</div>
+            <div class="upload-card__name">Comprov. de residência</div>
+            <div class="upload-card__hint">Conta de luz, água, gás, TV/internet, extrato bancário ou cartão de crédito. Emitido há no máx. 3 meses. Não aceitamos conta de celular isolada.</div>
             <span class="upload-card__status">Aguardando</span>
             <span class="upload-card__cta">Enviar</span>
           </div>
-          <div class="upload-card">
-            <i data-lucide="camera" style="width:28px;height:28px"></i>
-            <div class="upload-card__name">Selfie + Documento</div>
-            <span class="upload-card__status">Aguardando</span>
-            <span class="upload-card__cta">Capturar</span>
+        </div>
+      </div>`;
+
+    case 3: return `
+      <div class="form-fields">
+        <div class="form-section-label">Endereço residencial</div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>CEP *</label>
+            <input type="text" placeholder="00000-000" />
           </div>
+          <div class="form-group">
+            <label>Estado *</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option selected>SP</option><option>SE</option><option>TO</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Logradouro *</label>
+          <input type="text" placeholder="Rua, Av., Alameda..." />
+        </div>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Número *</label>
+            <input type="text" placeholder="123" />
+          </div>
+          <div class="form-group">
+            <label>Complemento</label>
+            <input type="text" placeholder="Apto, sala..." />
+          </div>
+          <div class="form-group">
+            <label>Bairro *</label>
+            <input type="text" placeholder="Auto-preenchido" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cidade *</label>
+          <input type="text" placeholder="Auto-preenchida pelo CEP" />
+        </div>
+        <div class="form-section-label">Contato</div>
+        <div class="form-group">
+          <label>Celular *</label>
+          <input type="tel" placeholder="+55 (51) 99999-9999" />
+        </div>
+      </div>`;
+
+    case 4: return `
+      <div class="form-fields">
+        <div class="form-group">
+          <label>Situação profissional *</label>
+          <div class="kyc-options kyc-options--compact" style="grid-template-columns:repeat(3,1fr)">
+            <button class="kyc-option-card" data-action="select-kyc-option">Empregado</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Autônomo</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Aposentado</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Desempregado</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Pessoa do lar</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Estudante</button>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Renda anual (BRL) *</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Até R$ 18.000</option>
+              <option>R$ 18.000 – R$ 36.000</option>
+              <option>R$ 36.000 – R$ 60.000</option>
+              <option>R$ 60.000 – R$ 120.000</option>
+              <option>R$ 120.000 – R$ 240.000</option>
+              <option>Acima de R$ 240.000</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Patrimônio líquido total (BRL) *</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Até R$ 50.000</option>
+              <option>R$ 50.000 – R$ 100.000</option>
+              <option>R$ 100.000 – R$ 250.000</option>
+              <option>R$ 250.000 – R$ 500.000</option>
+              <option>R$ 500.000 – R$ 1.000.000</option>
+              <option>Acima de R$ 1.000.000</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fonte dos recursos</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Salário / rendimentos</option>
+              <option>Economias acumuladas</option>
+              <option>Herança</option>
+              <option>Renda de aluguel</option>
+              <option>Recursos de investimentos</option>
+              <option>Venda de imóvel ou empresa</option>
+              <option>Cônjuge / Pais / Familiar</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pessoa Politicamente Exposta (PEP) *</label>
+            <select>
+              <option>Não</option>
+              <option>Sim — cargo público</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Possui residência fiscal fora do Brasil?</label>
+          <div class="kyc-options kyc-options--2 kyc-options--compact">
+            <button class="kyc-option-card selected" data-action="select-kyc-option">Não</button>
+            <button class="kyc-option-card" data-action="select-kyc-option">Sim</button>
+          </div>
+        </div>
+      </div>`;
+
+    case 5: return `
+      <div class="suit-chat-wrap">
+        <div class="suit-chat" id="suit-chat"></div>
+      </div>`;
+
+    case 6: return `
+      <div class="form-fields">
+        <div class="kyc-review-grid">
+          <div class="kyc-review-card">
+            <div class="kyc-review-card__head">
+              <i data-lucide="user" style="width:13px;height:13px"></i>
+              <span>Identificação</span>
+              <button class="kyc-review-card__edit" data-action="kyc-goto" data-value="1">Editar</button>
+            </div>
+            <div class="kyc-review-card__rows">
+              <div class="kyc-review-row"><span>Nome</span><span>Érico Monteiro</span></div>
+              <div class="kyc-review-row"><span>CPF</span><span>000.000.000-00</span></div>
+              <div class="kyc-review-row"><span>Nascimento</span><span>01/01/1990</span></div>
+              <div class="kyc-review-row"><span>E-mail</span><span>erico@email.com</span></div>
+            </div>
+          </div>
+          <div class="kyc-review-card">
+            <div class="kyc-review-card__head">
+              <i data-lucide="file-check" style="width:13px;height:13px"></i>
+              <span>Documentos</span>
+              <button class="kyc-review-card__edit" data-action="kyc-goto" data-value="2">Editar</button>
+            </div>
+            <div class="kyc-review-card__rows">
+              <div class="kyc-review-row"><span>Tipo</span><span>RG</span></div>
+              <div class="kyc-review-row"><span>Documento</span><span>Enviado</span></div>
+              <div class="kyc-review-row"><span>Comprovante</span><span>Enviado</span></div>
+            </div>
+          </div>
+          <div class="kyc-review-card">
+            <div class="kyc-review-card__head">
+              <i data-lucide="map-pin" style="width:13px;height:13px"></i>
+              <span>Endereço</span>
+              <button class="kyc-review-card__edit" data-action="kyc-goto" data-value="3">Editar</button>
+            </div>
+            <div class="kyc-review-card__rows">
+              <div class="kyc-review-row"><span>CEP</span><span>04538-132</span></div>
+              <div class="kyc-review-row"><span>Endereço</span><span>Av. Paulista, 1000</span></div>
+              <div class="kyc-review-row"><span>Celular</span><span>+55 (51) 99999-9999</span></div>
+            </div>
+          </div>
+          <div class="kyc-review-card">
+            <div class="kyc-review-card__head">
+              <i data-lucide="briefcase" style="width:13px;height:13px"></i>
+              <span>Ocupação</span>
+              <button class="kyc-review-card__edit" data-action="kyc-goto" data-value="4">Editar</button>
+            </div>
+            <div class="kyc-review-card__rows">
+              <div class="kyc-review-row"><span>Situação</span><span>Empregado</span></div>
+              <div class="kyc-review-row"><span>Renda anual</span><span>R$ 60k–120k</span></div>
+              <div class="kyc-review-row"><span>Patrimônio</span><span>R$ 100k–250k</span></div>
+            </div>
+          </div>
+        </div>
+        ${kycSuit.profile ? `
+        <div class="kyc-review-profile">
+          <div class="kyc-review-profile__label">Perfil de investidor</div>
+          <div class="kyc-review-profile__name">${kycSuit.profile}</div>
+          <button class="kyc-review-card__edit" data-action="kyc-goto" data-value="5">Refazer</button>
+        </div>` : `
+        <div class="kyc-review-profile kyc-review-profile--warn">
+          <i data-lucide="alert-circle" style="width:14px;height:14px"></i>
+          <div>Perfil de investidor não definido. Volte para a etapa 5 antes de enviar.</div>
+        </div>`}
+        <div class="kyc-confirmations">
+          <label class="checkbox-label">
+            <input type="checkbox" />
+            Confirmo que os dados acima são verdadeiros e corretos.
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" />
+            Concordo com o W-8BEN e autorizo a coleta dos meus dados pela Epik e seus parceiros regulatórios.
+          </label>
         </div>
       </div>`;
 
@@ -661,23 +928,24 @@ function buildKycStepContent() {
 }
 
 function buildKycForm() {
-  if (state.kycStep === 5) {
+  if (state.kycStep === 7) {
     return `
       <div class="kyc-page">
         <div class="kyc-container" style="align-items:center">
           <img src="assets/logo.svg" alt="EPIK" class="kyc-logo" />
-          <div class="kyc-card" style="width:100%;max-width:520px;text-align:center">
+          <div class="kyc-card" style="width:100%;max-width:560px;text-align:center">
             <div class="kyc-success">
               <div class="kyc-success__icon-wrap">
                 <i data-lucide="check-circle-2" style="width:38px;height:38px"></i>
               </div>
-              <h2 class="kyc-success__title">Cadastro Concluído!</h2>
+              <h2 class="kyc-success__title">Cadastro enviado!</h2>
               <p class="kyc-success__text">
-                Sua documentação foi enviada e está sendo analisada.<br/>
-                Em breve você receberá a confirmação por e-mail.
+                Sua documentação foi enviada com sucesso.<br/>
+                Os contratos serão enviados por e-mail em até 2 dias úteis.<br/>
+                <strong style="color:var(--text-muted);font-size:13px">Protocolo: EPK-2026-00847</strong>
               </p>
               <div class="kyc-success__partners">
-                <span>Processando em</span>
+                <span>Em processamento em</span>
                 <div class="kyc-success__partner-tags">
                   <span class="partner-tag">Ideal DTVM</span>
                   <span class="partner-tag">Ouribank</span>
@@ -686,8 +954,7 @@ function buildKycForm() {
                 </div>
               </div>
               <button class="btn-primary btn-primary--lg" data-action="kyc-submit">
-                Começar a Investir
-                <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+                Começar a investir
               </button>
             </div>
           </div>
@@ -710,8 +977,12 @@ function buildKycForm() {
       </div>`;
   }).join('');
 
-  const currentStep = KYC_STEPS[state.kycStep - 1];
-  const isLastStep  = state.kycStep === 4;
+  const currentStep   = KYC_STEPS[state.kycStep - 1];
+  const isLastStep    = state.kycStep === 6;
+  const isSuitStep    = state.kycStep === 5;
+  const nextDisabled  = (isSuitStep && !kycSuit.done) ? 'disabled' : '';
+  const nextLabel     = isLastStep ? 'Confirmar e enviar' : 'Próximo';
+  const slideClass    = kycNavDir >= 0 ? 'kyc-card--fwd' : 'kyc-card--bwd';
 
   const prevBtn = state.kycStep > 1
     ? `<button class="btn-ghost" data-action="kyc-prev">
@@ -725,9 +996,10 @@ function buildKycForm() {
       <div class="kyc-container">
         <div class="kyc-header">
           <img src="assets/logo.svg" alt="EPIK" class="kyc-logo" />
+          <div class="kyc-progress-text">Etapa ${state.kycStep} de ${KYC_STEPS.length}</div>
         </div>
         <div class="kyc-stepper">${stepperHtml}</div>
-        <div class="kyc-card">
+        <div class="kyc-card ${slideClass}">
           <div class="kyc-card__header">
             <i data-lucide="${currentStep.icon}" style="width:24px;height:24px" class="kyc-card__icon"></i>
             <div>
@@ -739,13 +1011,127 @@ function buildKycForm() {
         </div>
         <div class="kyc-nav">
           ${prevBtn}
-          <button class="btn-primary btn-primary--lg" data-action="kyc-next">
-            ${isLastStep ? 'Finalizar' : 'Próximo'}
-            <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+          <button class="btn-primary btn-primary--lg" id="kyc-next-btn" data-action="kyc-next" ${nextDisabled}>
+            ${nextLabel}
           </button>
         </div>
       </div>
     </div>`;
+}
+
+// ── Suitability Chat ──
+function suitAppendBotMsg(container, text, animate) {
+  const div = document.createElement('div');
+  div.className = 'suit-msg suit-msg--bot' + (animate ? ' suit-anim' : '');
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function suitAppendUserMsg(container, text) {
+  const div = document.createElement('div');
+  div.className = 'suit-msg suit-msg--user suit-anim';
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function suitAppendOptions(container, qIdx) {
+  const q = SUIT_QUESTIONS[qIdx];
+  const wrap = document.createElement('div');
+  wrap.className = 'suit-answers suit-anim';
+  wrap.dataset.qidx = qIdx;
+  wrap.innerHTML = q.opts.map((opt, oi) =>
+    `<button class="suit-answer-btn" data-action="suit-answer" data-qidx="${qIdx}" data-oidx="${oi}">${opt}</button>`
+  ).join('');
+  container.appendChild(wrap);
+  wrap.querySelectorAll('[data-action]').forEach(el => {
+    el.removeEventListener('click', handleAction);
+    el.addEventListener('click', handleAction);
+  });
+  if (q.multi) {
+    const confirmWrap = document.createElement('div');
+    confirmWrap.className = 'suit-confirm-wrap suit-anim';
+    confirmWrap.innerHTML = `<button class="suit-confirm-btn" data-action="suit-confirm" data-qidx="${qIdx}" disabled>Confirmar</button>`;
+    container.appendChild(confirmWrap);
+    confirmWrap.querySelectorAll('[data-action]').forEach(el => {
+      el.removeEventListener('click', handleAction);
+      el.addEventListener('click', handleAction);
+    });
+  }
+  container.scrollTop = container.scrollHeight;
+}
+
+function suitAppendResult(container) {
+  const isApproved = kycSuit.profile === 'Arrojado';
+  const div = document.createElement('div');
+  div.className = 'suit-result suit-anim ' + (isApproved ? 'suit-result--ok' : 'suit-result--warn');
+  div.innerHTML =
+    `<div class="suit-result__badge">${kycSuit.profile}</div>` +
+    `<div class="suit-result__desc">${
+      isApproved
+        ? 'Perfil aprovado. Você terá acesso completo aos produtos da plataforma.'
+        : 'Com este perfil, alguns produtos poderão estar indisponíveis. Você pode continuar e atualizar seu perfil depois.'
+    }</div>` +
+    (!isApproved
+      ? `<button class="suit-retry-btn" data-action="suit-retry">Refazer questionário</button>`
+      : '');
+  container.appendChild(div);
+  div.querySelectorAll('[data-action]').forEach(el => {
+    el.removeEventListener('click', handleAction);
+    el.addEventListener('click', handleAction);
+  });
+  container.scrollTop = container.scrollHeight;
+  const nextBtn = document.getElementById('kyc-next-btn');
+  if (nextBtn) nextBtn.removeAttribute('disabled');
+}
+
+function suitAdvanceChat(container) {
+  const nextIdx = kycSuit.answers.length;
+  const typing = document.createElement('div');
+  typing.className = 'suit-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  container.appendChild(typing);
+  container.scrollTop = container.scrollHeight;
+  if (nextIdx >= SUIT_QUESTIONS.length) {
+    kycSuit.done = true;
+    const last = kycSuit.answers[10].a;
+    kycSuit.profile = last.startsWith('A') ? 'Conservador' : last.startsWith('B') ? 'Moderado' : 'Arrojado';
+    setTimeout(() => { typing.remove(); suitAppendResult(container); }, 1000);
+    return;
+  }
+  setTimeout(() => {
+    typing.remove();
+    suitAppendBotMsg(container, SUIT_QUESTIONS[nextIdx].q, true);
+    suitAppendOptions(container, nextIdx);
+  }, 700);
+}
+
+function initSuitChat() {
+  const container = document.getElementById('suit-chat');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < kycSuit.answers.length; i++) {
+    suitAppendBotMsg(container, kycSuit.answers[i].q, false);
+    suitAppendUserMsg(container, kycSuit.answers[i].a);
+  }
+  if (kycSuit.done) { suitAppendResult(container); return; }
+  const qIdx = kycSuit.answers.length;
+  const q = SUIT_QUESTIONS[qIdx];
+  if (qIdx === 0) {
+    const typing = document.createElement('div');
+    typing.className = 'suit-typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    container.appendChild(typing);
+    setTimeout(() => {
+      typing.remove();
+      suitAppendBotMsg(container, q.q, true);
+      suitAppendOptions(container, qIdx);
+    }, 900);
+  } else {
+    suitAppendBotMsg(container, q.q, false);
+    suitAppendOptions(container, qIdx);
+  }
 }
 
 // ── Pre-Cadastro ──
