@@ -5,7 +5,7 @@ const state = {
   screen: 'home',
   kycStep: 1,           // 1-4 form steps, 5 = success
   kycCompleted: false,
-  user: { name: 'Érico' },
+  user: { name: 'Érico', lastName: 'Monteiro', email: 'erico.monteiro@email.com' },
 };
 
 function setState(patch) {
@@ -46,6 +46,17 @@ function attachEvents() {
     el.removeEventListener('click', handleAction);
     el.addEventListener('click', handleAction);
   });
+  document.removeEventListener('click', closeDropdowns);
+  document.addEventListener('click', closeDropdowns);
+}
+
+function closeDropdowns(e) {
+  if (!e.target.closest('.nav-icon-btn') && !e.target.closest('.notif-dropdown')) {
+    document.querySelector('.notif-dropdown')?.classList.remove('open');
+  }
+  if (!e.target.closest('.nav-user-btn') && !e.target.closest('.user-menu-dropdown')) {
+    document.querySelector('.user-menu-dropdown')?.classList.remove('open');
+  }
 }
 
 function handleAction(e) {
@@ -87,8 +98,38 @@ function handleAction(e) {
       if (!isOpen) clicked.classList.add('open');
       return;
     }
+    case 'toggle-notif': {
+      document.querySelector('.user-menu-dropdown')?.classList.remove('open');
+      document.querySelector('.notif-dropdown')?.classList.toggle('open');
+      e.stopPropagation();
+      return;
+    }
+    case 'toggle-user-menu': {
+      document.querySelector('.notif-dropdown')?.classList.remove('open');
+      document.querySelector('.user-menu-dropdown')?.classList.toggle('open');
+      e.stopPropagation();
+      return;
+    }
+    case 'edit-profile': {
+      document.querySelector('.user-menu-dropdown')?.classList.remove('open');
+      setState({ authState: 'kyc', kycStep: 1 });
+      return;
+    }
+    case 'logout': {
+      document.querySelector('.user-menu-dropdown')?.classList.remove('open');
+      setState({ authState: 'login', screen: 'home', kycCompleted: false });
+      return;
+    }
   }
 }
+
+// ── Notifications Data ──
+const NOTIFICATIONS = [
+  { icon: 'trending-up',  color: 'emerald', title: 'Portfólio em alta',       desc: 'Seus ETFs subiram 3,2% nas últimas 24h',               time: '2h',      unread: true  },
+  { icon: 'arrow-right-left', color: 'amber', title: 'Câmbio favorável',      desc: 'USD/BRL abaixo de R$ 5,20 — boa hora para remessa',    time: '5h',      unread: true  },
+  { icon: 'shield-check', color: 'violet',  title: 'Documento aprovado',      desc: 'Sua CNH foi verificada com sucesso',                   time: 'Ontem',   unread: false },
+  { icon: 'file-text',    color: 'sky',     title: 'Tax Center disponível',   desc: 'Importe suas operações de 2024 para o IRPF',           time: '3 dias',  unread: false },
+];
 
 // ── Nav Items ──
 const NAV_ITEMS = [
@@ -145,13 +186,66 @@ function buildTopNav() {
         <button class="nav-flag-btn ${state.mode === 'US' ? 'active' : ''}" data-action="mode" data-value="US" title="United States">
           ${FLAG_US}
         </button>
-        <button class="nav-icon-btn">
-          <i data-lucide="bell" style="width:15px;height:15px"></i>
-        </button>
-        <button class="nav-user-btn">
-          <i data-lucide="user" style="width:14px;height:14px"></i>
-          ${state.user.name}
-        </button>
+        <div class="nav-dropdown-wrap">
+          <button class="nav-icon-btn" data-action="toggle-notif">
+            <i data-lucide="bell" style="width:15px;height:15px"></i>
+            ${NOTIFICATIONS.some(n => n.unread) ? '<span class="notif-badge"></span>' : ''}
+          </button>
+          <div class="notif-dropdown">
+            <div class="notif-dropdown__header">
+              <span class="notif-dropdown__title">Notificações</span>
+              <span class="notif-dropdown__count">${NOTIFICATIONS.filter(n => n.unread).length} novas</span>
+            </div>
+            <div class="notif-dropdown__list">
+              ${NOTIFICATIONS.map(n => `
+                <div class="notif-item ${n.unread ? 'notif-item--unread' : ''}">
+                  <div class="notif-item__icon notif-item__icon--${n.color}">
+                    <i data-lucide="${n.icon}" style="width:14px;height:14px"></i>
+                  </div>
+                  <div class="notif-item__body">
+                    <div class="notif-item__title">${n.title}</div>
+                    <div class="notif-item__desc">${n.desc}</div>
+                  </div>
+                  <div class="notif-item__time">${n.time}</div>
+                  ${n.unread ? '<span class="notif-item__dot"></span>' : ''}
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown-wrap">
+          <button class="nav-user-btn" data-action="toggle-user-menu">
+            <span class="nav-user-btn__avatar">${state.user.name[0]}${state.user.lastName[0]}</span>
+            ${state.user.name} ${state.user.lastName}
+            <i data-lucide="chevron-down" style="width:12px;height:12px;opacity:0.5"></i>
+          </button>
+          <div class="user-menu-dropdown">
+            <div class="user-menu__profile">
+              <div class="user-menu__avatar">${state.user.name[0]}${state.user.lastName[0]}</div>
+              <div>
+                <div class="user-menu__name">${state.user.name} ${state.user.lastName}</div>
+                <div class="user-menu__email">${state.user.email}</div>
+              </div>
+            </div>
+            <div class="user-menu__divider"></div>
+            <button class="user-menu__item" data-action="edit-profile">
+              <i data-lucide="user-pen" style="width:14px;height:14px"></i>
+              Editar perfil
+            </button>
+            <button class="user-menu__item">
+              <i data-lucide="settings" style="width:14px;height:14px"></i>
+              Configurações
+            </button>
+            <button class="user-menu__item">
+              <i data-lucide="shield" style="width:14px;height:14px"></i>
+              Segurança
+            </button>
+            <div class="user-menu__divider"></div>
+            <button class="user-menu__item user-menu__item--danger" data-action="logout">
+              <i data-lucide="log-out" style="width:14px;height:14px"></i>
+              Sair
+            </button>
+          </div>
+        </div>
       </div>
     </nav>`;
 }
