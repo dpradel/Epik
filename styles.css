@@ -1617,25 +1617,25 @@ input, select, textarea { font-family: inherit; }
   color: var(--accent);
 }
 
-.tax-actions { display: flex; flex-direction: column; gap: 10px; }
+.tax-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .tax-action-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-left-width: 2px;
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 16px 20px;
+  border-top-width: 2px;
+  border-radius: var(--radius-lg);
+  padding: 22px 20px;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 14px;
   transition: all 0.18s;
 }
 .tax-action-card:hover { background: var(--bg-surface-3); }
-.tax-action-card--amber { border-left-color: rgba(251,146,60,0.65); }
-.tax-action-card--amber:hover { box-shadow: inset 3px 0 20px rgba(251,146,60,0.08); }
-.tax-action-card--violet { border-left-color: rgba(124,106,250,0.65); }
-.tax-action-card--violet:hover { box-shadow: inset 3px 0 20px rgba(124,106,250,0.08); }
-.tax-action-card--sky { border-left-color: rgba(56,189,248,0.65); }
-.tax-action-card--sky:hover { box-shadow: inset 3px 0 20px rgba(56,189,248,0.08); }
+.tax-action-card--amber { border-top-color: rgba(251,146,60,0.70); }
+.tax-action-card--amber:hover { box-shadow: 0 -3px 20px rgba(251,146,60,0.10); }
+.tax-action-card--violet { border-top-color: rgba(124,106,250,0.70); }
+.tax-action-card--violet:hover { box-shadow: 0 -3px 20px rgba(124,106,250,0.10); }
+.tax-action-card--sky { border-top-color: rgba(56,189,248,0.70); }
+.tax-action-card--sky:hover { box-shadow: 0 -3px 20px rgba(56,189,248,0.10); }
 
 .tax-action-card__icon-wrap {
   width: 38px;
@@ -1650,7 +1650,7 @@ input, select, textarea { font-family: inherit; }
 .tax-action-card--violet .tax-action-card__icon-wrap { background: rgba(124,106,250,0.12); color: #7C6AFA; }
 .tax-action-card--sky    .tax-action-card__icon-wrap { background: rgba(56,189,248,0.12);  color: #38BDF8; }
 
-.tax-action-card__info { flex: 1; }
+.tax-action-card__info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .tax-action-card__title {
   font-size: 13px;
   font-weight: 600;
@@ -1671,7 +1671,8 @@ input, select, textarea { font-family: inherit; }
   padding: 7px 16px;
   border-radius: 9999px;
   white-space: nowrap;
-  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: auto;
   transition: all 0.15s;
 }
 .tax-action-card__btn:hover {
