@@ -115,9 +115,7 @@ input, select, textarea { font-family: inherit; }
   align-items: center;
   padding: 0 28px;
   gap: 0;
-  background: rgba(7,9,17,0.88);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(7,9,17,0.97);
   border-bottom: 1px solid var(--glass-border);
   position: relative;
   z-index: 100;
