@@ -196,11 +196,11 @@ input, select, textarea { font-family: inherit; }
 }
 .nav-flag-btn {
   width: 36px;
-  height: 36px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 6px;
   border: 1px solid transparent;
   background: none;
   cursor: pointer;
