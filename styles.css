@@ -1048,7 +1048,7 @@ input, select, textarea { font-family: inherit; }
   position: relative;
   background:
     linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.70) 50%, rgba(10,10,11,0.20) 100%),
-    url('assets/fundo.png') center center / cover no-repeat;
+    url('assets/imagem de fundo.png') center center / cover no-repeat;
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: var(--radius-xl);
   padding: 44px 48px;
