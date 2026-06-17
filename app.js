@@ -62,7 +62,12 @@ function handleAction(e) {
     case 'kyc-prev':      setState({ kycStep: Math.max(state.kycStep - 1, 1) }); break;
     case 'kyc-submit':    setState({ authState: 'authenticated', screen: 'home', mode: 'BR', kycCompleted: true }); break;
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
-    case 'nav':           setState({ screen: value }); break;
+    case 'nav': {
+      const navItem = NAV_ITEMS.find(n => n.id === value);
+      if (!navItem || !navItem.modes.includes(state.mode)) return;
+      setState({ screen: value });
+      break;
+    }
     case 'mode': {
       const available = NAV_ITEMS.find(n => n.id === state.screen)?.modes.includes(value);
       setState({ mode: value, screen: available ? state.screen : 'home' });
@@ -119,8 +124,11 @@ function buildTopNav() {
     const isActive = state.screen === item.id && state.authState === 'authenticated';
     const isAvailable = item.modes.includes(state.mode);
     const cls = ['nav-item', isActive ? 'active' : '', !isAvailable ? 'dimmed' : ''].filter(Boolean).join(' ');
+    const tooltip = !isAvailable
+      ? `data-tooltip="Disponível apenas no modo ${item.modes[0] === 'BR' ? 'BR' : 'US'}"`
+      : '';
     return `
-      <button class="${cls}" data-action="nav" data-value="${item.id}">
+      <button class="${cls}" data-action="nav" data-value="${item.id}" ${tooltip}>
         <i data-lucide="${item.icon}" style="width:14px;height:14px"></i>
         ${item.label}
       </button>`;
@@ -951,19 +959,21 @@ function buildAtendimento() {
           <input type="text" placeholder="Escreva o que quer saber aqui..." />
         </div>
       </div>
-      <div class="faq-section">
-        <div class="section-title">Perguntas Frequentes</div>
-        ${faqRows}
-      </div>
-      <div class="contact-section">
-        <div class="section-title">Fale Conosco</div>
-        <div class="contact-row">
-          <span class="contact-icon"><i data-lucide="phone" style="width:16px;height:16px"></i></span>
-          Telefone: +55 (11) 0000-0000
+      <div class="atendimento-body">
+        <div class="faq-section">
+          <div class="section-title">Perguntas Frequentes</div>
+          ${faqRows}
         </div>
-        <div class="contact-row">
-          <span class="contact-icon"><i data-lucide="message-circle" style="width:16px;height:16px"></i></span>
-          WhatsApp: +55 (11) 90000-0000
+        <div class="contact-section">
+          <div class="section-title">Fale Conosco</div>
+          <div class="contact-row">
+            <span class="contact-icon"><i data-lucide="phone" style="width:16px;height:16px"></i></span>
+            Telefone: +55 (11) 0000-0000
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon"><i data-lucide="message-circle" style="width:16px;height:16px"></i></span>
+            WhatsApp: +55 (11) 90000-0000
+          </div>
         </div>
       </div>
     </div>`;
@@ -974,7 +984,7 @@ function buildTaxCenter() {
   return `
     <div class="tax-page">
       <div class="tax-import-area">
-        <i data-lucide="upload-cloud" style="width:44px;height:44px"></i>
+        <i data-lucide="upload-cloud" style="width:22px;height:22px"></i>
         <div class="tax-import-area__label">Importar Operações</div>
       </div>
       <div class="tax-actions">
