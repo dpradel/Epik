@@ -388,7 +388,7 @@ function buildSignup() {
             </div>
             <div class="form-group">
               <label>Data de Nascimento</label>
-              <input type="date" />
+              <input type="text" placeholder="DD/MM/AAAA" />
             </div>
             <div class="form-group">
               <label>Senha</label>
@@ -446,7 +446,7 @@ function buildKycStepContent() {
         </div>
         <div class="form-group">
           <label>Data de Nascimento</label>
-          <input type="date" />
+          <input type="text" placeholder="DD/MM/AAAA" />
         </div>
         <div class="form-group">
           <label>Telefone</label>
@@ -521,7 +521,7 @@ function buildKycStepContent() {
               <i data-lucide="percent" style="width:20px;height:20px"></i>
               Renda Regular
             </button>
-            <button class="kyc-option-card selected">
+            <button class="kyc-option-card selected" data-action="select-kyc-option">
               <i data-lucide="trending-up" style="width:20px;height:20px"></i>
               Crescimento
             </button>
@@ -535,7 +535,7 @@ function buildKycStepContent() {
           <div class="kyc-question__label">Qual é sua tolerância ao risco?</div>
           <div class="kyc-options">
             <button class="kyc-option-card" data-action="select-kyc-option">Conservador</button>
-            <button class="kyc-option-card selected">Moderado</button>
+            <button class="kyc-option-card selected" data-action="select-kyc-option">Moderado</button>
             <button class="kyc-option-card" data-action="select-kyc-option">Arrojado</button>
             <button class="kyc-option-card" data-action="select-kyc-option">Agressivo</button>
           </div>
@@ -638,7 +638,6 @@ function buildKycForm() {
       <div class="kyc-container">
         <div class="kyc-header">
           <img src="assets/logo.svg" alt="EPIK" class="kyc-logo" />
-          <div class="kyc-progress-text">Etapa ${state.kycStep} de 4</div>
         </div>
         <div class="kyc-stepper">${stepperHtml}</div>
         <div class="kyc-card">
@@ -734,7 +733,7 @@ function buildHomeBR() {
             <div class="banner-eyebrow">Plataforma de Investimentos</div>
             <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
             <p class="banner-subtitle">De ações americanas a renda fixa, tudo em um só lugar com a segurança da EPIK.</p>
-            <button class="banner-cta">
+            <button class="banner-cta" data-action="nav" data-value="cambio">
               Explorar produtos
               <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
             </button>
