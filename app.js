@@ -1123,17 +1123,14 @@ function buildPosicao() {
 
 // ── Trading ──
 function buildTrading() {
+  const embedUrl = 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FQLrzIYBksjU1mUYnZuO3gg%2F-HB-WEB--Epik%3Fnode-id%3D18117-145925';
   return `
-    <div class="trading-page">
-      <div class="trading-hb-wrap">
-        <div class="trading-hb-header">
-          <div class="trading-hb-badge">
-            <i data-lucide="monitor" style="width:13px;height:13px"></i>
-            HB Nelogica — Negociação em Conta Real
-          </div>
-        </div>
-        <img src="assets/Market Depth.png" alt="HB Nelogica — Market Depth" class="trading-hb-img" />
-      </div>
+    <div class="trading-page trading-page--embed">
+      <iframe
+        src="${embedUrl}"
+        class="trading-figma-embed"
+        allowfullscreen
+      ></iframe>
     </div>`;
 }
 
