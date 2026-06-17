@@ -78,6 +78,19 @@ function buildLockedScreen(navItem) {
     </div>`;
 }
 
+function animateModeToggle(newMode, callback) {
+  const thumb = document.querySelector('.mode-toggle__thumb');
+  if (thumb) {
+    thumb.classList.toggle('mode-toggle__thumb--right', newMode === 'US');
+    document.querySelectorAll('.mode-toggle__opt').forEach(o => {
+      o.classList.toggle('active', o.dataset.value === newMode);
+    });
+    setTimeout(callback, 300);
+  } else {
+    callback();
+  }
+}
+
 function attachEvents() {
   document.querySelectorAll('[data-action]').forEach(el => {
     el.removeEventListener('click', handleAction);
@@ -114,24 +127,17 @@ function handleAction(e) {
       const navItem = NAV_ITEMS.find(n => n.id === value);
       if (!navItem) return;
       if (!navItem.modes.includes(state.mode)) {
-        setState({ mode: navItem.modes[0], screen: value });
+        const targetMode = navItem.modes[0];
+        animateModeToggle(targetMode, () => setState({ mode: targetMode, screen: value }));
       } else {
         setState({ screen: value });
       }
-      break;
+      return;
     }
     case 'mode': {
       const newMode = value;
       if (newMode === state.mode) return;
-      // Animate toggle thumb first, re-render after transition completes
-      const thumb = document.querySelector('.mode-toggle__thumb');
-      if (thumb) {
-        thumb.classList.toggle('mode-toggle__thumb--right', newMode === 'US');
-        document.querySelectorAll('.mode-toggle__opt').forEach(o => {
-          o.classList.toggle('active', o.dataset.value === newMode);
-        });
-      }
-      setTimeout(() => setState({ mode: newMode }), 300);
+      animateModeToggle(newMode, () => setState({ mode: newMode }));
       return;
     }
     case 'set-screen': {
