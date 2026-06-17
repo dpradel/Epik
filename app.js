@@ -48,20 +48,31 @@ function buildScreen() {
   }
 }
 
+function buildLockedScreenGhost() {
+  switch (state.screen) {
+    case 'trading':    return buildTrading();
+    case 'posicao':    return buildPosicao();
+    case 'cambio':     return buildCambio();
+    case 'tax-center': return buildTaxCenter();
+    default:           return '<div style="height:100%"></div>';
+  }
+}
+
 function buildLockedScreen(navItem) {
   const requiredMode = navItem.modes[0];
   const flagLabel = requiredMode === 'BR' ? 'modo BR' : 'modo US';
   return `
     <div class="locked-screen">
+      <div class="locked-screen__bg">${buildLockedScreenGhost()}</div>
+      <div class="locked-screen__overlay"></div>
       <div class="locked-screen__card">
         <div class="locked-screen__icon">
-          <i data-lucide="lock" style="width:22px;height:22px"></i>
+          <i data-lucide="lock" style="width:20px;height:20px"></i>
         </div>
         <div class="locked-screen__title">${navItem.label}</div>
-        <div class="locked-screen__desc">Esta página está disponível apenas no ${flagLabel}. Troque de modo para continuar.</div>
+        <div class="locked-screen__desc">Esta página está disponível apenas no ${flagLabel}.</div>
         <button class="locked-screen__btn" data-action="mode" data-value="${requiredMode}">
           Ativar ${flagLabel}
-          <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
         </button>
       </div>
     </div>`;
@@ -110,8 +121,18 @@ function handleAction(e) {
       break;
     }
     case 'mode': {
-      setState({ mode: value });
-      break;
+      const newMode = value;
+      if (newMode === state.mode) return;
+      // Animate toggle thumb first, re-render after transition completes
+      const thumb = document.querySelector('.mode-toggle__thumb');
+      if (thumb) {
+        thumb.classList.toggle('mode-toggle__thumb--right', newMode === 'US');
+        document.querySelectorAll('.mode-toggle__opt').forEach(o => {
+          o.classList.toggle('active', o.dataset.value === newMode);
+        });
+      }
+      setTimeout(() => setState({ mode: newMode }), 300);
+      return;
     }
     case 'set-screen': {
       document.querySelector('.user-menu-dropdown')?.classList.remove('open');

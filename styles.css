@@ -169,36 +169,36 @@ input, select, textarea { font-family: inherit; }
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 9999px;
   padding: 3px;
-  gap: 0;
 }
 .mode-toggle__thumb {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 34px;
-  height: 26px;
-  background: var(--bg-surface-3);
-  border: 1px solid rgba(255,255,255,0.14);
+  width: 36px;
+  height: 28px;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.22);
   border-radius: 9999px;
-  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  transition: transform 0.30s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-.mode-toggle__thumb--right { transform: translateX(34px); }
+.mode-toggle__thumb--right { transform: translateX(36px); }
 .mode-toggle__opt {
-  width: 34px;
-  height: 26px;
+  width: 36px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
   position: relative;
   z-index: 1;
-  opacity: 0.45;
-  transition: opacity 0.2s;
+  opacity: 0.38;
+  transition: opacity 0.22s;
 }
 .mode-toggle__opt.active { opacity: 1; }
 .nav-icon-btn {
@@ -1174,30 +1174,48 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 
 /* ── Locked screen ── */
 .locked-screen {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  overflow: hidden;
+}
+.locked-screen__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: blur(10px) brightness(0.35) saturate(0.6);
+  transform: scale(1.04);
+}
+.locked-screen__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,10,11,0.45);
 }
 .locked-screen__card {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   text-align: center;
-  max-width: 360px;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-subtle);
+  max-width: 340px;
+  background: rgba(20,20,28,0.55);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255,255,255,0.11);
   border-radius: var(--radius-xl);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
   padding: 40px 36px;
 }
 .locked-screen__icon {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--bg-surface-3);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1215,16 +1233,13 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   line-height: 1.6;
 }
 .locked-screen__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   background: var(--accent);
   color: #0A0A0B;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 10px 22px;
+  padding: 10px 24px;
   margin-top: 8px;
 }
 
