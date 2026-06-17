@@ -724,11 +724,10 @@ function buildHomeBR() {
 
   return `
     <div class="home-br">
-      <div class="home-br__left">
-        ${kycPrompt}
+      ${kycPrompt}
+      <div class="home-br__top">
         <div class="home-br__banner">
           <div class="banner-blob"></div>
-
           <div class="banner-content">
             <div class="banner-eyebrow">Plataforma de Investimentos</div>
             <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
@@ -739,8 +738,8 @@ function buildHomeBR() {
             </button>
           </div>
         </div>
+        ${buildAvisosPanel()}
       </div>
-      ${buildAvisosPanel()}
     </div>`;
 }
 

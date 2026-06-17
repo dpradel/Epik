@@ -308,9 +308,6 @@ input, select, textarea { font-family: inherit; }
   font-size: 11px;
   font-weight: 600;
   color: var(--accent);
-  background: var(--accent-dim);
-  padding: 2px 8px;
-  border-radius: 9999px;
 }
 .notif-dropdown__list { padding: 8px; }
 .notif-item {
@@ -933,8 +930,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   display: flex;
   flex-direction: column;
   gap: 8px;
-  position: sticky;
-  top: 24px;
+  overflow-y: auto;
 }
 .avisos-panel__header {
   display: flex;
@@ -1190,17 +1186,16 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 
 /* ── Home BR ── */
 .home-br {
-  display: grid;
-  grid-template-columns: 1fr 288px;
-  gap: 20px;
-  align-items: start;
-  padding: 24px 32px 32px;
-}
-.home-br__left {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  min-width: 0;
+  padding: 24px 32px 32px;
+}
+.home-br__top {
+  display: grid;
+  grid-template-columns: 1fr 288px;
+  gap: 20px;
+  align-items: stretch;
 }
 .home-br__banner {
   position: relative;
