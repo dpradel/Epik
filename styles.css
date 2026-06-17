@@ -159,60 +159,48 @@ input, select, textarea { font-family: inherit; }
   background: var(--accent);
   font-weight: 700;
 }
-.nav-item.dimmed {
-  color: rgba(192,200,214,0.30);
-  cursor: not-allowed;
-}
-.nav-item.dimmed .lucide { opacity: 0.30; }
-.nav-item.dimmed:hover {
-  background: none;
-  color: rgba(192,200,214,0.40);
-}
-.nav-item[data-tooltip] { position: relative; }
-.nav-item[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg-surface-3);
-  border: 1px solid rgba(255,255,255,0.14);
-  color: var(--text-primary);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: var(--radius);
-  white-space: nowrap;
-  z-index: 300;
-  box-shadow: var(--shadow-md);
-  pointer-events: none;
-}
 .app-nav__right {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-left: 16px;
 }
-.nav-flag-btn {
-  width: 36px;
-  height: 28px;
+.mode-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 0;
+}
+.mode-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 26px;
+  background: var(--bg-surface-3);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 9999px;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.mode-toggle__thumb--right { transform: translateX(34px); }
+.mode-toggle__opt {
+  width: 34px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  opacity: 0.5;
+  border-radius: 9999px;
+  position: relative;
+  z-index: 1;
+  opacity: 0.45;
+  transition: opacity 0.2s;
 }
-.nav-flag-btn:hover { background: rgba(255,255,255,0.06); opacity: 0.8; }
-.nav-flag-btn.active {
-  background: #F5C518;
-  border-color: #F5C518;
-  opacity: 1;
-  box-shadow: 0 0 14px rgba(245,197,24,0.40);
-}
+.mode-toggle__opt.active { opacity: 1; }
 .nav-icon-btn {
   width: 36px;
   height: 36px;
@@ -1182,6 +1170,62 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   justify-content: center;
   gap: 16px;
   padding-top: 8px;
+}
+
+/* ── Locked screen ── */
+.locked-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.locked-screen__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  max-width: 360px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px;
+}
+.locked-screen__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.locked-screen__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.locked-screen__desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.locked-screen__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #0A0A0B;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  margin-top: 8px;
 }
 
 /* ── Settings / Segurança ── */

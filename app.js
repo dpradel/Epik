@@ -30,18 +30,41 @@ function buildApp() {
 }
 
 function buildScreen() {
+  const navItem = NAV_ITEMS.find(n => n.id === state.screen);
+  if (navItem && !navItem.modes.includes(state.mode)) {
+    return buildLockedScreen(navItem);
+  }
   switch (state.screen) {
-    case 'home':         return state.mode === 'BR' ? buildHomeBR() : buildHomeUS();
-    case 'cambio':       return buildCambio();
-    case 'posicao':      return buildPosicao();
-    case 'trading':      return buildTrading();
-    case 'atendimento':  return buildAtendimento();
+    case 'home':           return state.mode === 'BR' ? buildHomeBR() : buildHomeUS();
+    case 'cambio':         return buildCambio();
+    case 'posicao':        return buildPosicao();
+    case 'trading':        return buildTrading();
+    case 'atendimento':    return buildAtendimento();
     case 'tax-center':     return buildTaxCenter();
     case 'configuracoes':  return buildConfiguracoes();
     case 'seguranca':      return buildSeguranca();
     case 'editar-perfil':  return buildEditarPerfil();
     default:               return buildHomeBR();
   }
+}
+
+function buildLockedScreen(navItem) {
+  const requiredMode = navItem.modes[0];
+  const flagLabel = requiredMode === 'BR' ? 'modo BR' : 'modo US';
+  return `
+    <div class="locked-screen">
+      <div class="locked-screen__card">
+        <div class="locked-screen__icon">
+          <i data-lucide="lock" style="width:22px;height:22px"></i>
+        </div>
+        <div class="locked-screen__title">${navItem.label}</div>
+        <div class="locked-screen__desc">Esta página está disponível apenas no ${flagLabel}. Troque de modo para continuar.</div>
+        <button class="locked-screen__btn" data-action="mode" data-value="${requiredMode}">
+          Ativar ${flagLabel}
+          <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+        </button>
+      </div>
+    </div>`;
 }
 
 function attachEvents() {
@@ -78,13 +101,16 @@ function handleAction(e) {
     case 'continuar':     setState({ authState: 'authenticated', screen: 'home', mode: 'BR' }); break;
     case 'nav': {
       const navItem = NAV_ITEMS.find(n => n.id === value);
-      if (!navItem || !navItem.modes.includes(state.mode)) return;
-      setState({ screen: value });
+      if (!navItem) return;
+      if (!navItem.modes.includes(state.mode)) {
+        setState({ mode: navItem.modes[0], screen: value });
+      } else {
+        setState({ screen: value });
+      }
       break;
     }
     case 'mode': {
-      const available = NAV_ITEMS.find(n => n.id === state.screen)?.modes.includes(value);
-      setState({ mode: value, screen: available ? state.screen : 'home' });
+      setState({ mode: value });
       break;
     }
     case 'set-screen': {
@@ -204,13 +230,9 @@ const FLAG_US = `<svg width="26" height="18" viewBox="0 0 26 18" xmlns="http://w
 function buildTopNav() {
   const items = NAV_ITEMS.map(item => {
     const isActive = state.screen === item.id && state.authState === 'authenticated';
-    const isAvailable = item.modes.includes(state.mode);
-    const cls = ['nav-item', isActive ? 'active' : '', !isAvailable ? 'dimmed' : ''].filter(Boolean).join(' ');
-    const tooltip = !isAvailable
-      ? `data-tooltip="Disponível apenas no modo ${item.modes[0] === 'BR' ? 'BR' : 'US'}"`
-      : '';
+    const cls = ['nav-item', isActive ? 'active' : ''].filter(Boolean).join(' ');
     return `
-      <button class="${cls}" data-action="nav" data-value="${item.id}" ${tooltip}>
+      <button class="${cls}" data-action="nav" data-value="${item.id}">
         <i data-lucide="${item.icon}" style="width:14px;height:14px"></i>
         ${item.label}
       </button>`;
@@ -221,12 +243,15 @@ function buildTopNav() {
       <img src="assets/logo.svg" alt="EPIK" class="app-nav__logo" />
       <div class="app-nav__items">${items}</div>
       <div class="app-nav__right">
-        <button class="nav-flag-btn ${state.mode === 'BR' ? 'active' : ''}" data-action="mode" data-value="BR" title="Brasil">
-          ${FLAG_BR}
-        </button>
-        <button class="nav-flag-btn ${state.mode === 'US' ? 'active' : ''}" data-action="mode" data-value="US" title="United States">
-          ${FLAG_US}
-        </button>
+        <div class="mode-toggle">
+          <div class="mode-toggle__thumb ${state.mode === 'US' ? 'mode-toggle__thumb--right' : ''}"></div>
+          <button class="mode-toggle__opt ${state.mode === 'BR' ? 'active' : ''}" data-action="mode" data-value="BR" title="Brasil">
+            ${FLAG_BR}
+          </button>
+          <button class="mode-toggle__opt ${state.mode === 'US' ? 'active' : ''}" data-action="mode" data-value="US" title="United States">
+            ${FLAG_US}
+          </button>
+        </div>
         <div class="nav-dropdown-wrap">
           <button class="nav-icon-btn" data-action="toggle-notif">
             <i data-lucide="bell" style="width:15px;height:15px"></i>
