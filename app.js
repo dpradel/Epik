@@ -134,6 +134,24 @@ function handleAction(e) {
       setState({ authState: 'login', screen: 'home', kycCompleted: false });
       return;
     }
+    case 'toggle-chart-period': {
+      const d = CHART_PERIODS[value];
+      if (!d) return;
+      document.querySelectorAll('.chart-period-pill').forEach(p => p.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      const fillPath = d.line + ' L500,138 L44,138 Z';
+      document.getElementById('chart-line')?.setAttribute('d', d.line);
+      document.getElementById('chart-fill')?.setAttribute('d', fillPath);
+      const xLabels = document.querySelectorAll('.chart-x-label');
+      d.labels.forEach((lbl, i) => { if (xLabels[i]) xLabels[i].textContent = lbl; });
+      const statStart = document.getElementById('chart-stat-start');
+      if (statStart) statStart.querySelector('.chart-stat__value').textContent = d.start;
+      const statRet = document.getElementById('chart-stat-ret');
+      if (statRet) statRet.querySelector('.chart-stat__value').innerHTML = `<span class="chart-stat__delta">${d.ret}</span>`;
+      const statDiv = document.getElementById('chart-stat-div');
+      if (statDiv) statDiv.querySelector('.chart-stat__value').textContent = d.div;
+      return;
+    }
   }
 }
 
@@ -752,17 +770,41 @@ function buildHomeBR() {
 }
 
 // ── Home US ──
+const CHART_PERIODS = {
+  '1M': {
+    line: 'M44,100 C90,95 130,98 170,88 C210,78 245,82 280,70 C315,58 355,55 390,44 C425,33 460,26 500,20',
+    start: '$46,200', current: '$48,400', ret: '+4.8%', div: '$120',
+    labels: ['Dia 1','Dia 5','Dia 10','Dia 15','Dia 20','Dia 25','Dia 30','',''],
+  },
+  '3M': {
+    line: 'M44,112 C80,108 115,104 155,92 C195,80 228,86 265,74 C302,62 336,66 373,52 C410,38 450,32 500,22',
+    start: '$45,100', current: '$48,400', ret: '+7.3%', div: '$340',
+    labels: ['Abr','','Mai','','Jun','','Jul','',''],
+  },
+  '6M': {
+    line: 'M44,118 C70,112 85,100 100,105 C122,112 138,82 160,68 C182,54 196,62 218,52 C240,42 255,48 278,36 C301,24 316,28 340,18 C364,8 390,6 416,5 C438,4 470,5 500,4',
+    start: '$44,200', current: '$48,400', ret: '+9.5%', div: '$840',
+    labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set'],
+  },
+  '1A': {
+    line: 'M44,128 C70,124 100,120 130,116 C160,112 190,108 220,100 C250,92 270,96 300,82 C330,68 355,72 385,56 C415,42 445,34 470,24 C485,18 492,14 500,10',
+    start: '$38,500', current: '$48,400', ret: '+25.7%', div: '$1,620',
+    labels: ['Jul\'24','Set','Nov','Jan','Mar','Mai','Jul\'25','',''],
+  },
+};
+
 function buildHomeUS() {
   const legendItems = [
-    { color: 'var(--accent)', name: 'ETFs',       pct: '68%' },
-    { color: '#00BCD4',       name: 'Ações',      pct: '18%' },
-    { color: '#7C4DFF',       name: 'Opções',     pct: '9%'  },
-    { color: '#FF7043',       name: 'Renda Fixa', pct: '5%'  },
+    { color: 'var(--accent)', name: 'ETFs',       pct: '68%', value: '$32,912' },
+    { color: '#00BCD4',       name: 'Ações',      pct: '18%', value: '$8,712'  },
+    { color: '#7C4DFF',       name: 'Opções',     pct: '9%',  value: '$4,356'  },
+    { color: '#FF7043',       name: 'Renda Fixa', pct: '5%',  value: '$2,420'  },
   ];
   const legend = legendItems.map(l => `
     <div class="carteira-legend-item">
       <div class="carteira-legend-dot" style="background:${l.color}"></div>
       <span class="carteira-legend-item__name">${l.name}</span>
+      <span class="carteira-legend-item__value">${l.value}</span>
       <span class="carteira-legend-item__pct">${l.pct}</span>
     </div>`).join('');
 
@@ -803,10 +845,10 @@ function buildHomeUS() {
           <div class="chart-area__header">
             <div class="chart-area__title">Rentabilidade do Portfólio</div>
             <div class="chart-area__period-pills">
-              <button class="chart-period-pill">1M</button>
-              <button class="chart-period-pill">3M</button>
-              <button class="chart-period-pill active">6M</button>
-              <button class="chart-period-pill">1A</button>
+              <button class="chart-period-pill" data-action="toggle-chart-period" data-value="1M">1M</button>
+              <button class="chart-period-pill" data-action="toggle-chart-period" data-value="3M">3M</button>
+              <button class="chart-period-pill active" data-action="toggle-chart-period" data-value="6M">6M</button>
+              <button class="chart-period-pill" data-action="toggle-chart-period" data-value="1A">1A</button>
             </div>
           </div>
           <div class="chart-svg-wrap">
@@ -825,44 +867,57 @@ function buildHomeUS() {
               <text x="2"  y="51"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">55k</text>
               <text x="2"  y="89"  fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">49k</text>
               <text x="2"  y="127" fill="rgba(255,255,255,0.28)" font-size="9" font-family="Inter,sans-serif">44k</text>
-              <path d="${chartFill}" class="chart-fill-path" fill="url(#rGrad)"/>
-              <path d="${chartLine}" class="chart-line-path" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="chart-fill" d="${chartFill}" class="chart-fill-path" fill="url(#rGrad)"/>
+              <path id="chart-line" d="${chartLine}" class="chart-line-path" stroke="rgba(251,189,11,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="500" cy="4" r="4" fill="var(--accent-color, #FBBD0B)"/>
               <circle cx="500" cy="4" r="7" fill="rgba(251,189,11,0.2)"/>
-              <text x="56"  y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
-              <text x="110" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Fev</text>
-              <text x="164" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mar</text>
-              <text x="218" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Abr</text>
-              <text x="272" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mai</text>
-              <text x="326" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jun</text>
-              <text x="380" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jul</text>
-              <text x="434" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Ago</text>
-              <text x="480" y="137" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Set</text>
+              <text x="56"  y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jan</text>
+              <text x="110" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Fev</text>
+              <text x="164" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mar</text>
+              <text x="218" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Abr</text>
+              <text x="272" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Mai</text>
+              <text x="326" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jun</text>
+              <text x="380" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Jul</text>
+              <text x="434" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Ago</text>
+              <text x="480" y="137" class="chart-x-label" fill="rgba(255,255,255,0.3)" font-size="8" font-family="Inter,sans-serif">Set</text>
             </svg>
           </div>
           <div class="chart-stats-row">
-            <div class="chart-stat">
+            <div class="chart-stat" id="chart-stat-start">
               <div class="chart-stat__label">Início do período</div>
               <div class="chart-stat__value">$44,200</div>
             </div>
-            <div class="chart-stat">
+            <div class="chart-stat" id="chart-stat-current">
               <div class="chart-stat__label">Valor atual</div>
               <div class="chart-stat__value">$48,400</div>
             </div>
-            <div class="chart-stat">
+            <div class="chart-stat" id="chart-stat-ret">
               <div class="chart-stat__label">Rentabilidade</div>
               <div class="chart-stat__value"><span class="chart-stat__delta">+9.5%</span></div>
             </div>
-            <div class="chart-stat">
+            <div class="chart-stat" id="chart-stat-div">
               <div class="chart-stat__label">Dividendos recebidos</div>
               <div class="chart-stat__value">$840</div>
             </div>
           </div>
         </div>
         <div class="carteira-panel">
-          <div class="carteira-panel__title">Minha Carteira</div>
-          <div class="donut-placeholder"></div>
+          <div class="carteira-panel__header">
+            <div class="carteira-panel__title">Minha Carteira</div>
+            <span class="carteira-panel__total-badge">+25.7%</span>
+          </div>
+          <div class="carteira-donut-wrap">
+            <div class="donut-placeholder"></div>
+            <div class="carteira-donut-label">
+              <div class="carteira-donut-label__value">$48,400</div>
+              <div class="carteira-donut-label__sub">total</div>
+            </div>
+          </div>
           <div class="carteira-legend">${legend}</div>
+          <div class="carteira-panel__footer">
+            <span class="carteira-panel__footer-label">Rentabilidade 12m</span>
+            <span class="carteira-panel__footer-val">+$9,900</span>
+          </div>
         </div>
       </div>
     </div>`;
