@@ -1107,6 +1107,8 @@ input, select, textarea { font-family: inherit; }
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(245,197,24,0.28);
   transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  width: auto;
 }
 .banner-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(245,197,24,0.38); }
 .banner-deco {
