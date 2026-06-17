@@ -212,8 +212,7 @@ function buildAvisosPanel() {
         <i data-lucide="${a.icon}" style="width:16px;height:16px"></i>
       </div>
       <div class="aviso-card__body">
-        <div class="aviso-tag aviso-tag--${a.tagStyle}">${a.tag}</div>
-        <div class="aviso-card__title">${a.title}</div>
+        <div class="aviso-card__title aviso-card__title--${a.tagStyle}">${a.title}</div>
         <div class="aviso-card__desc">${a.desc}</div>
       </div>
     </div>`).join('');

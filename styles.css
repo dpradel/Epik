@@ -792,13 +792,12 @@ input, select, textarea { font-family: inherit; }
 .avisos-panel__header-icon {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
-  background: var(--accent-dim);
-  border: 1px solid rgba(245,197,24,0.22);
+  border-radius: 6px;
+  background: #F5C518;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: #0A0A0B;
   flex-shrink: 0;
 }
 .avisos-panel__title   { font-size: 13px; font-weight: 700; }
@@ -904,6 +903,10 @@ input, select, textarea { font-family: inherit; }
   color: var(--text-muted);
   line-height: 1.3;
 }
+.aviso-card__title--purple { color: #C084FC; }
+.aviso-card__title--cyan   { color: #67E8F9; }
+.aviso-card__title--gold   { color: #FDE047; }
+.aviso-card__title--green  { color: #6EE7B7; }
 .aviso-card__desc {
   font-size: 10px;
   color: var(--text-dim);
