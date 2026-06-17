@@ -36,8 +36,10 @@ function buildScreen() {
     case 'posicao':      return buildPosicao();
     case 'trading':      return buildTrading();
     case 'atendimento':  return buildAtendimento();
-    case 'tax-center':   return buildTaxCenter();
-    default:             return buildHomeBR();
+    case 'tax-center':     return buildTaxCenter();
+    case 'configuracoes':  return buildConfiguracoes();
+    case 'seguranca':      return buildSeguranca();
+    default:               return buildHomeBR();
   }
 }
 
@@ -83,6 +85,11 @@ function handleAction(e) {
       const available = NAV_ITEMS.find(n => n.id === state.screen)?.modes.includes(value);
       setState({ mode: value, screen: available ? state.screen : 'home' });
       break;
+    }
+    case 'set-screen': {
+      document.querySelector('.user-menu-dropdown')?.classList.remove('open');
+      setState({ screen: value });
+      return;
     }
     case 'toggle-faq': {
       const clicked = e.currentTarget;
@@ -237,11 +244,11 @@ function buildTopNav() {
               <i data-lucide="user-pen" style="width:14px;height:14px"></i>
               Editar perfil
             </button>
-            <button class="user-menu__item">
+            <button class="user-menu__item" data-action="set-screen" data-value="configuracoes">
               <i data-lucide="settings" style="width:14px;height:14px"></i>
               Configurações
             </button>
-            <button class="user-menu__item">
+            <button class="user-menu__item" data-action="set-screen" data-value="seguranca">
               <i data-lucide="shield" style="width:14px;height:14px"></i>
               Segurança
             </button>
@@ -1153,6 +1160,259 @@ function animateCounters() {
     }
     requestAnimationFrame(step);
   });
+}
+
+// ── Configurações ──
+function buildConfiguracoes() {
+  return `
+    <div class="settings-page">
+      <div class="settings-page__header">
+        <button class="settings-back-btn" data-action="set-screen" data-value="home">
+          <i data-lucide="arrow-left" style="width:15px;height:15px"></i>
+          Voltar
+        </button>
+        <h2 class="settings-page__title">Configurações</h2>
+      </div>
+
+      <div class="settings-sections">
+        <div class="settings-section">
+          <div class="settings-section__title">Preferências</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Idioma da plataforma</div>
+                <div class="settings-row__desc">Idioma exibido em menus e textos</div>
+              </div>
+              <select class="settings-select">
+                <option>Português (BR)</option>
+                <option>English (US)</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Moeda de exibição</div>
+                <div class="settings-row__desc">Moeda padrão para exibição de valores</div>
+              </div>
+              <select class="settings-select">
+                <option>BRL — Real</option>
+                <option>USD — Dólar</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Fuso horário</div>
+                <div class="settings-row__desc">Utilizado para horários de ordens e alertas</div>
+              </div>
+              <select class="settings-select">
+                <option>América/São Paulo (UTC-3)</option>
+                <option>America/New York (UTC-5)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section__title">Notificações</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Alertas de preço</div>
+                <div class="settings-row__desc">Notificar quando ativos atingirem os limites configurados</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" checked>
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Ordens executadas</div>
+                <div class="settings-row__desc">Notificar quando uma ordem for preenchida ou cancelada</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" checked>
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Novidades EPIK</div>
+                <div class="settings-row__desc">Comunicados, lançamentos e promoções</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox">
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Relatórios mensais</div>
+                <div class="settings-row__desc">Resumo mensal de rentabilidade e operações</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" checked>
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section__title">Privacidade</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Ocultar saldo na home</div>
+                <div class="settings-row__desc">Esconde valores financeiros por padrão ao abrir o app</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox">
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Compartilhar dados de uso</div>
+                <div class="settings-row__desc">Ajuda a melhorar a plataforma com dados anônimos</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" checked>
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Segurança ──
+function buildSeguranca() {
+  return `
+    <div class="settings-page">
+      <div class="settings-page__header">
+        <button class="settings-back-btn" data-action="set-screen" data-value="home">
+          <i data-lucide="arrow-left" style="width:15px;height:15px"></i>
+          Voltar
+        </button>
+        <h2 class="settings-page__title">Segurança</h2>
+      </div>
+
+      <div class="settings-sections">
+        <div class="settings-section">
+          <div class="settings-section__title">Acesso</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Senha</div>
+                <div class="settings-row__desc">Última alteração há 47 dias</div>
+              </div>
+              <button class="settings-action-btn">Alterar</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Autenticação em dois fatores</div>
+                <div class="settings-row__desc">Ativa — via aplicativo autenticador</div>
+              </div>
+              <button class="settings-action-btn">Gerenciar</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Biometria</div>
+                <div class="settings-row__desc">Usar impressão digital ou Face ID para entrar</div>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" checked>
+                <span class="settings-toggle__track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section__title">Sessões ativas</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__icon settings-row__icon--emerald">
+                <i data-lucide="monitor" style="width:15px;height:15px"></i>
+              </div>
+              <div class="settings-row__info">
+                <div class="settings-row__label">Chrome — MacOS</div>
+                <div class="settings-row__desc">São Paulo, BR — agora</div>
+              </div>
+              <span class="settings-badge settings-badge--active">Esta sessão</span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__icon settings-row__icon--sky">
+                <i data-lucide="smartphone" style="width:15px;height:15px"></i>
+              </div>
+              <div class="settings-row__info">
+                <div class="settings-row__label">Safari — iPhone 15</div>
+                <div class="settings-row__desc">São Paulo, BR — 2h atrás</div>
+              </div>
+              <button class="settings-action-btn settings-action-btn--danger">Encerrar</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__icon settings-row__icon--violet">
+                <i data-lucide="tablet" style="width:15px;height:15px"></i>
+              </div>
+              <div class="settings-row__info">
+                <div class="settings-row__label">Chrome — iPad</div>
+                <div class="settings-row__desc">Campinas, BR — 3 dias atrás</div>
+              </div>
+              <button class="settings-action-btn settings-action-btn--danger">Encerrar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section__title">Histórico de acessos</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Login bem-sucedido</div>
+                <div class="settings-row__desc">Chrome — São Paulo, BR</div>
+              </div>
+              <span class="settings-row__time">Hoje, 09:14</span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Login bem-sucedido</div>
+                <div class="settings-row__desc">Safari — iPhone 15 — São Paulo, BR</div>
+              </div>
+              <span class="settings-row__time">Hoje, 07:32</span>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Tentativa bloqueada</div>
+                <div class="settings-row__desc settings-row__desc--danger">IP desconhecido — Frankfurt, DE</div>
+              </div>
+              <span class="settings-row__time">Ontem, 23:57</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section__title">Zona de risco</div>
+          <div class="settings-card settings-card--danger">
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Encerrar todas as sessões</div>
+                <div class="settings-row__desc">Desconecta todos os dispositivos exceto o atual</div>
+              </div>
+              <button class="settings-action-btn settings-action-btn--danger">Encerrar tudo</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row__info">
+                <div class="settings-row__label">Excluir conta</div>
+                <div class="settings-row__desc">Ação irreversível — todos os dados serão apagados</div>
+              </div>
+              <button class="settings-action-btn settings-action-btn--danger">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
 render();
