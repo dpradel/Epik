@@ -613,15 +613,14 @@ function buildHomeBR() {
   const kycPrompt = !state.kycCompleted ? `
     <div class="kyc-prompt">
       <div class="kyc-prompt__icon">
-        <i data-lucide="user-check" style="width:18px;height:18px"></i>
+        <i data-lucide="circle-alert" style="width:14px;height:14px"></i>
       </div>
       <div class="kyc-prompt__text">
-        <div class="kyc-prompt__title">Complete seu cadastro para começar a investir</div>
-        <div class="kyc-prompt__sub">Falta pouco — verifique sua identidade e ative sua conta nos EUA</div>
+        <div class="kyc-prompt__title">Verificação de identidade pendente — ative sua conta nos EUA</div>
       </div>
       <button class="kyc-prompt__btn" data-action="start-kyc">
-        Completar cadastro
-        <i data-lucide="arrow-right" style="width:13px;height:13px"></i>
+        Completar
+        <i data-lucide="arrow-right" style="width:11px;height:11px"></i>
       </button>
     </div>` : '';
 
@@ -631,6 +630,55 @@ function buildHomeBR() {
         ${kycPrompt}
         <div class="home-br__banner">
           <div class="banner-blob"></div>
+          <div class="banner-deco" aria-hidden="true">
+            <svg viewBox="0 0 380 220" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="bannerAreaFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#F5C518" stop-opacity="0.18"/>
+                  <stop offset="85%" stop-color="#F5C518" stop-opacity="0.00"/>
+                </linearGradient>
+                <linearGradient id="bannerAreaFill2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#7C6AFA" stop-opacity="0.10"/>
+                  <stop offset="85%" stop-color="#7C6AFA" stop-opacity="0.00"/>
+                </linearGradient>
+              </defs>
+              <!-- grid lines -->
+              <line x1="30" y1="40"  x2="370" y2="40"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="30" y1="80"  x2="370" y2="80"  stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="30" y1="120" x2="370" y2="120" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="30" y1="160" x2="370" y2="160" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="100" y1="20" x2="100" y2="200" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              <line x1="180" y1="20" x2="180" y2="200" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              <line x1="260" y1="20" x2="260" y2="200" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              <line x1="340" y1="20" x2="340" y2="200" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              <!-- secondary line (violet, lower) -->
+              <path d="M30,185 C80,178 130,168 180,155 C230,142 280,132 370,120" fill="none" stroke="rgba(124,106,250,0.30)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M30,185 C80,178 130,168 180,155 C230,142 280,132 370,120 L370,210 L30,210 Z" fill="url(#bannerAreaFill2)"/>
+              <!-- candle wicks -->
+              <line x1="95"  y1="128" x2="95"  y2="148" stroke="rgba(52,211,153,0.35)" stroke-width="1.5"/>
+              <line x1="175" y1="100" x2="175" y2="118" stroke="rgba(52,211,153,0.35)" stroke-width="1.5"/>
+              <line x1="255" y1="78"  x2="255" y2="92"  stroke="rgba(52,211,153,0.35)" stroke-width="1.5"/>
+              <line x1="335" y1="54"  x2="335" y2="68"  stroke="rgba(52,211,153,0.35)" stroke-width="1.5"/>
+              <!-- candle bodies (green) -->
+              <rect x="91"  y="135" width="8" height="18" rx="1" fill="rgba(52,211,153,0.30)"/>
+              <rect x="171" y="107" width="8" height="14" rx="1" fill="rgba(52,211,153,0.30)"/>
+              <rect x="251" y="83"  width="8" height="13" rx="1" fill="rgba(52,211,153,0.30)"/>
+              <rect x="331" y="60"  width="8" height="12" rx="1" fill="rgba(52,211,153,0.30)"/>
+              <!-- main area fill -->
+              <path d="M30,178 C70,165 110,148 160,128 C205,110 250,88 310,62 C335,52 355,42 375,32 L375,210 L30,210 Z" fill="url(#bannerAreaFill)"/>
+              <!-- main line glow -->
+              <path d="M30,178 C70,165 110,148 160,128 C205,110 250,88 310,62 C335,52 355,42 375,32" fill="none" stroke="rgba(245,197,24,0.28)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- main line sharp -->
+              <path d="M30,178 C70,165 110,148 160,128 C205,110 250,88 310,62 C335,52 355,42 375,32" fill="none" stroke="rgba(245,197,24,0.80)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- endpoint -->
+              <circle cx="375" cy="32" r="10" fill="rgba(245,197,24,0.18)"/>
+              <circle cx="375" cy="32" r="5"  fill="rgba(245,197,24,0.55)"/>
+              <circle cx="375" cy="32" r="3"  fill="#F5C518"/>
+              <!-- price tag -->
+              <rect x="302" y="18" width="56" height="20" rx="4" fill="rgba(245,197,24,0.12)" stroke="rgba(245,197,24,0.25)" stroke-width="1"/>
+              <text x="330" y="32" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="600" fill="rgba(245,197,24,0.90)">+18.4%</text>
+            </svg>
+          </div>
           <div class="banner-content">
             <div class="banner-eyebrow">Plataforma de Investimentos</div>
             <h2 class="banner-title">Invista nos melhores mercados do mundo</h2>
